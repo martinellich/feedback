@@ -12,7 +12,6 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasDynamicTitle;
@@ -88,7 +87,7 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
 
             if (question.getQuestionType() == QuestionType.RATING) {
                 var ratingGroup = new RadioButtonGroup<Integer>();
-                ratingGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+                ratingGroup.addClassName("rating-group");
                 ratingGroup.setItems(1, 2, 3, 4, 5);
                 ratingGroup.setItemLabelGenerator(i -> getTranslation("form.rating." + i));
                 add(ratingGroup);
