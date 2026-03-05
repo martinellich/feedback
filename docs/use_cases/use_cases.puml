@@ -1,0 +1,42 @@
+@startuml use_cases
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor "Anonymer\nBenutzer" as anon
+actor "Formular-\nBesitzer" as owner
+actor "Geteilter\nBenutzer" as shared
+
+rectangle "JUG Feedback" {
+    usecase "UC-01\nAnmelden" as UC01
+    usecase "UC-02\nFormular erstellen" as UC02
+    usecase "UC-03\nFormular bearbeiten" as UC03
+    usecase "UC-04\nFormular\nveroeffentlichen" as UC04
+    usecase "UC-05\nFeedback abgeben" as UC05
+    usecase "UC-06\nErgebnisse anzeigen" as UC06
+    usecase "UC-07\nFormular teilen" as UC07
+    usecase "UC-08\nQR-Code generieren" as UC08
+    usecase "UC-09\nFormular schliessen" as UC09
+    usecase "UC-10\nFormular\nwieder oeffnen" as UC10
+    usecase "UC-11\nFormular loeschen" as UC11
+}
+
+anon --> UC01
+anon --> UC05
+
+owner --> UC02
+owner --> UC03
+owner --> UC04
+owner --> UC06
+owner --> UC07
+owner --> UC08
+owner --> UC09
+owner --> UC10
+owner --> UC11
+
+shared --> UC06
+shared --> UC08
+
+owner --|> anon : extends
+shared --|> anon : extends
+@enduml
