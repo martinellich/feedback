@@ -1,7 +1,9 @@
 .idea
 data/
 src/main/frontend
+.settings
 target
-/.classpath
-/.project
-/jug-feedback.iml
+
+.classpath
+.project
+jug-feedback.iml
