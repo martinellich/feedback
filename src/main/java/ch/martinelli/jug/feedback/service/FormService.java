@@ -5,6 +5,7 @@ import ch.martinelli.jug.feedback.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,15 +31,16 @@ public class FormService {
         this.formShareRepository = formShareRepository;
     }
 
-    public FeedbackForm createFormFromTemplate(String title, String speakerName, String topic, String ownerEmail) {
-        FeedbackForm form = new FeedbackForm();
+    public FeedbackForm createFormFromTemplate(String title, String speakerName, LocalDate eventDate, String location, String ownerEmail) {
+        var form = new FeedbackForm();
         form.setTitle(title);
         form.setSpeakerName(speakerName);
-        form.setTopic(topic);
+        form.setEventDate(eventDate);
+        form.setLocation(location);
         form.setOwnerEmail(ownerEmail);
         form = formRepository.save(form);
 
-        String[][] templateQuestions = {
+        var templateQuestions = new String[][]{
             {"Inhalt des Vortrags", "RATING"},
             {"Präsentation und Aufbau", "RATING"},
             {"Fachkompetenz des Referenten", "RATING"},
@@ -54,8 +56,8 @@ public class FormService {
             {"Welche Themen wünschen Sie sich für zukünftige Veranstaltungen?", "TEXT"}
         };
 
-        for (int i = 0; i < templateQuestions.length; i++) {
-            FeedbackQuestion question = new FeedbackQuestion();
+        for (var i = 0; i < templateQuestions.length; i++) {
+            var question = new FeedbackQuestion();
             question.setForm(form);
             question.setQuestionText(templateQuestions[i][0]);
             question.setQuestionType(QuestionType.valueOf(templateQuestions[i][1]));
@@ -129,8 +131,8 @@ public class FormService {
         if (formShareRepository.existsByFormIdAndSharedWithEmail(formId, email)) {
             return;
         }
-        FeedbackForm form = formRepository.findById(formId).orElseThrow();
-        FormShare share = new FormShare();
+        var form = formRepository.findById(formId).orElseThrow();
+        var share = new FormShare();
         share.setForm(form);
         share.setSharedWithEmail(email);
         formShareRepository.save(share);
@@ -146,8 +148,8 @@ public class FormService {
     }
 
     public FeedbackResponse submitResponse(Long formId, List<FeedbackAnswer> answers) {
-        FeedbackForm form = formRepository.findById(formId).orElseThrow();
-        FeedbackResponse response = new FeedbackResponse();
+        var form = formRepository.findById(formId).orElseThrow();
+        var response = new FeedbackResponse();
         response.setForm(form);
         response = responseRepository.save(response);
 

@@ -8,6 +8,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
@@ -27,7 +28,8 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
     private Grid<FeedbackQuestion> questionGrid;
     private TextField titleField;
     private TextField speakerField;
-    private TextField topicField;
+    private DatePicker dateField;
+    private TextField locationField;
 
     public FormEditorView(FormService formService) {
         this.formService = formService;
@@ -42,7 +44,7 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
 
     @Override
     public void setParameter(BeforeEvent event, Long formId) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!formService.hasAccess(formId, email)) {
             event.forwardTo(DashboardView.class);
             return;
@@ -56,10 +58,10 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
     private void buildView() {
         removeAll();
 
-        Button backButton = new Button(getTranslation("editor.back"),
+        var backButton = new Button(getTranslation("editor.back"),
             e -> UI.getCurrent().navigate(DashboardView.class));
 
-        H2 title = new H2(getTranslation("editor.title", currentForm.getTitle()));
+        var title = new H2(getTranslation("editor.title", currentForm.getTitle()));
 
         titleField = new TextField(getTranslation("editor.form-title"));
         titleField.setValue(currentForm.getTitle() != null ? currentForm.getTitle() : "");
@@ -69,14 +71,18 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
         speakerField.setValue(currentForm.getSpeakerName() != null ? currentForm.getSpeakerName() : "");
         speakerField.setWidth("300px");
 
-        topicField = new TextField(getTranslation("editor.topic"));
-        topicField.setValue(currentForm.getTopic() != null ? currentForm.getTopic() : "");
-        topicField.setWidth("300px");
+        dateField = new DatePicker(getTranslation("editor.date"));
+        dateField.setValue(currentForm.getEventDate());
+        dateField.setWidth("300px");
 
-        Button saveButton = new Button(getTranslation("editor.save"), e -> saveFormDetails());
+        locationField = new TextField(getTranslation("editor.location"));
+        locationField.setValue(currentForm.getLocation() != null ? currentForm.getLocation() : "");
+        locationField.setWidth("300px");
+
+        var saveButton = new Button(getTranslation("editor.save"), e -> saveFormDetails());
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        HorizontalLayout formFields = new HorizontalLayout(titleField, speakerField, topicField, saveButton);
+        var formFields = new HorizontalLayout(titleField, speakerField, dateField, locationField, saveButton);
         formFields.setAlignItems(Alignment.BASELINE);
         formFields.setWidthFull();
 
@@ -87,16 +93,16 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
         questionGrid.setItems(currentForm.getQuestions());
         questionGrid.setHeight("400px");
 
-        TextField newQuestionText = new TextField(getTranslation("editor.new-question"));
+        var newQuestionText = new TextField(getTranslation("editor.new-question"));
         newQuestionText.setWidth("400px");
 
-        ComboBox<QuestionType> newQuestionType = new ComboBox<>(getTranslation("editor.new-question.type"));
+        var newQuestionType = new ComboBox<QuestionType>(getTranslation("editor.new-question.type"));
         newQuestionType.setItems(QuestionType.values());
         newQuestionType.setValue(QuestionType.RATING);
 
-        Button addQuestionBtn = new Button(getTranslation("editor.add-question"), e -> {
+        var addQuestionBtn = new Button(getTranslation("editor.add-question"), e -> {
             if (!newQuestionText.getValue().trim().isEmpty()) {
-                FeedbackQuestion q = new FeedbackQuestion();
+                var q = new FeedbackQuestion();
                 q.setForm(currentForm);
                 q.setQuestionText(newQuestionText.getValue().trim());
                 q.setQuestionType(newQuestionType.getValue());
@@ -110,7 +116,7 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
         });
         addQuestionBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        HorizontalLayout addQuestionLayout = new HorizontalLayout(newQuestionText, newQuestionType, addQuestionBtn);
+        var addQuestionLayout = new HorizontalLayout(newQuestionText, newQuestionType, addQuestionBtn);
         addQuestionLayout.setAlignItems(Alignment.BASELINE);
 
         add(backButton, title, formFields, questionGrid, addQuestionLayout);
@@ -119,7 +125,8 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
     private void saveFormDetails() {
         currentForm.setTitle(titleField.getValue().trim());
         currentForm.setSpeakerName(speakerField.getValue().trim());
-        currentForm.setTopic(topicField.getValue().trim());
+        currentForm.setEventDate(dateField.getValue());
+        currentForm.setLocation(locationField.getValue().trim());
         formService.saveForm(currentForm);
         Notification.show(getTranslation("editor.saved"), 2000, Notification.Position.BOTTOM_START);
     }

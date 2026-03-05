@@ -1,7 +1,6 @@
 package ch.martinelli.jug.feedback.views;
 
 import ch.martinelli.jug.feedback.entity.FeedbackForm;
-import ch.martinelli.jug.feedback.entity.FormShare;
 import ch.martinelli.jug.feedback.entity.FormStatus;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.service.QrCodeService;
@@ -16,6 +15,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.HasDynamicTitle;
@@ -27,7 +27,6 @@ import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
 
 @Route("")
 @PermitAll
@@ -44,11 +43,11 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         setSizeFull();
         setPadding(true);
 
-        H2 title = new H2(getTranslation("dashboard.title"));
-        Button createButton = new Button(getTranslation("dashboard.create-new"), e -> showCreateDialog());
+        var title = new H2(getTranslation("dashboard.title"));
+        var createButton = new Button(getTranslation("dashboard.create-new"), e -> showCreateDialog());
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        HorizontalLayout header = new HorizontalLayout(title, createButton);
+        var header = new HorizontalLayout(title, createButton);
         header.setAlignItems(Alignment.BASELINE);
         header.setWidthFull();
         header.setJustifyContentMode(JustifyContentMode.BETWEEN);
@@ -56,10 +55,11 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         grid = new Grid<>(FeedbackForm.class, false);
         grid.addColumn(FeedbackForm::getTitle).setHeader(getTranslation("dashboard.column.title")).setAutoWidth(true);
         grid.addColumn(FeedbackForm::getSpeakerName).setHeader(getTranslation("dashboard.column.speaker")).setAutoWidth(true);
-        grid.addColumn(FeedbackForm::getTopic).setHeader(getTranslation("dashboard.column.topic")).setAutoWidth(true);
+        grid.addColumn(FeedbackForm::getEventDate).setHeader(getTranslation("dashboard.column.date")).setAutoWidth(true);
+        grid.addColumn(FeedbackForm::getLocation).setHeader(getTranslation("dashboard.column.location")).setAutoWidth(true);
         grid.addColumn(form -> form.getStatus().name()).setHeader(getTranslation("dashboard.column.status")).setAutoWidth(true);
         grid.addColumn(form -> {
-            String currentUser = getCurrentUserEmail();
+            var currentUser = getCurrentUserEmail();
             if (currentUser.equals(form.getOwnerEmail())) {
                 return getTranslation("dashboard.access.owner");
             }
@@ -88,14 +88,14 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
     }
 
     private HorizontalLayout createActionButtons(FeedbackForm form) {
-        HorizontalLayout buttons = new HorizontalLayout();
-        String currentUser = getCurrentUserEmail();
-        boolean isOwner = currentUser.equals(form.getOwnerEmail());
+        var buttons = new HorizontalLayout();
+        var currentUser = getCurrentUserEmail();
+        var isOwner = currentUser.equals(form.getOwnerEmail());
 
-        Button resultsButton = new Button(getTranslation("dashboard.action.results"), e -> UI.getCurrent().navigate(ResultsView.class, form.getId()));
+        var resultsButton = new Button(getTranslation("dashboard.action.results"), e -> UI.getCurrent().navigate(ResultsView.class, form.getId()));
         resultsButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
-        Button qrButton = new Button(getTranslation("dashboard.action.qr-code"), e -> showQrDialog(form));
+        var qrButton = new Button(getTranslation("dashboard.action.qr-code"), e -> showQrDialog(form));
         qrButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
         if (!isOwner) {
@@ -103,34 +103,34 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
             return buttons;
         }
 
-        Button shareButton = new Button(getTranslation("dashboard.action.share"), e -> showShareDialog(form));
+        var shareButton = new Button(getTranslation("dashboard.action.share"), e -> showShareDialog(form));
         shareButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
         if (form.getStatus() == FormStatus.DRAFT) {
-            Button editButton = new Button(getTranslation("dashboard.action.edit"), e -> UI.getCurrent().navigate(FormEditorView.class, form.getId()));
+            var editButton = new Button(getTranslation("dashboard.action.edit"), e -> UI.getCurrent().navigate(FormEditorView.class, form.getId()));
             editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
-            Button publishButton = new Button(getTranslation("dashboard.action.publish"), e -> {
+            var publishButton = new Button(getTranslation("dashboard.action.publish"), e -> {
                 formService.publishForm(form.getId());
                 refreshGrid();
             });
             publishButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_SUCCESS);
             buttons.add(editButton, publishButton, qrButton, resultsButton, shareButton);
         } else if (form.getStatus() == FormStatus.PUBLIC) {
-            Button closeButton = new Button(getTranslation("dashboard.action.close"), e -> {
+            var closeButton = new Button(getTranslation("dashboard.action.close"), e -> {
                 formService.closeForm(form.getId());
                 refreshGrid();
             });
             closeButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
             buttons.add(closeButton, qrButton, resultsButton, shareButton);
         } else {
-            Button reopenButton = new Button(getTranslation("dashboard.action.reopen"), e -> {
+            var reopenButton = new Button(getTranslation("dashboard.action.reopen"), e -> {
                 formService.reopenForm(form.getId());
                 refreshGrid();
             });
             reopenButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
-            Button deleteButton = new Button(getTranslation("dashboard.action.delete"), e -> {
+            var deleteButton = new Button(getTranslation("dashboard.action.delete"), e -> {
                 formService.deleteForm(form.getId());
                 refreshGrid();
             });
@@ -142,22 +142,22 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
     }
 
     private void showShareDialog(FeedbackForm form) {
-        Dialog dialog = new Dialog();
+        var dialog = new Dialog();
         dialog.setHeaderTitle(getTranslation("dashboard.share.title", form.getTitle()));
 
-        VerticalLayout content = new VerticalLayout();
+        var content = new VerticalLayout();
         content.setPadding(false);
 
-        List<FormShare> shares = formService.getShares(form.getId());
-        VerticalLayout shareList = new VerticalLayout();
+        var shares = formService.getShares(form.getId());
+        var shareList = new VerticalLayout();
         shareList.setPadding(false);
         shareList.setSpacing(false);
 
-        for (FormShare share : shares) {
-            HorizontalLayout row = new HorizontalLayout();
+        for (var share : shares) {
+            var row = new HorizontalLayout();
             row.setAlignItems(Alignment.CENTER);
-            Span emailSpan = new Span(share.getSharedWithEmail());
-            Button removeBtn = new Button(getTranslation("dashboard.share.remove"), e -> {
+            var emailSpan = new Span(share.getSharedWithEmail());
+            var removeBtn = new Button(getTranslation("dashboard.share.remove"), e -> {
                 formService.unshareForm(form.getId(), share.getSharedWithEmail());
                 dialog.close();
                 showShareDialog(form);
@@ -171,11 +171,11 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
             shareList.add(new Span(getTranslation("dashboard.share.empty")));
         }
 
-        EmailField emailField = new EmailField(getTranslation("dashboard.share.email"));
+        var emailField = new EmailField(getTranslation("dashboard.share.email"));
         emailField.setWidthFull();
 
-        Button addButton = new Button(getTranslation("dashboard.share.button"), e -> {
-            String email = emailField.getValue().trim();
+        var addButton = new Button(getTranslation("dashboard.share.button"), e -> {
+            var email = emailField.getValue().trim();
             if (email.isEmpty() || emailField.isInvalid()) {
                 Notification.show(getTranslation("dashboard.share.error.invalid-email"), 3000, Notification.Position.MIDDLE);
                 return;
@@ -191,7 +191,7 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         });
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        HorizontalLayout addRow = new HorizontalLayout(emailField, addButton);
+        var addRow = new HorizontalLayout(emailField, addButton);
         addRow.setAlignItems(Alignment.BASELINE);
         addRow.setWidthFull();
 
@@ -202,26 +202,26 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
     }
 
     private void showQrDialog(FeedbackForm form) {
-        Dialog dialog = new Dialog();
+        var dialog = new Dialog();
         dialog.setHeaderTitle(getTranslation("dashboard.qr.title", form.getTitle()));
 
         var request = VaadinServletRequest.getCurrent().getHttpServletRequest();
-        String formUrl = request.getScheme() + "://" + request.getServerName()
+        var formUrl = request.getScheme() + "://" + request.getServerName()
                 + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort())
                 + "/form/" + form.getPublicToken();
-        byte[] qrBytes = qrCodeService.generateQrCode(formUrl, 300, 300);
+        var qrBytes = qrCodeService.generateQrCode(formUrl, 300, 300);
 
-        Image qrImage = new Image(
+        var qrImage = new Image(
                 DownloadHandler.fromInputStream(event ->
                         new DownloadResponse(new ByteArrayInputStream(qrBytes), "qr.png", "image/png", qrBytes.length)),
                 "QR Code");
         qrImage.setWidth("300px");
         qrImage.setHeight("300px");
 
-        Span urlSpan = new Span(formUrl);
+        var urlSpan = new Span(formUrl);
         urlSpan.getStyle().set("word-break", "break-all");
 
-        Button copyButton = new Button(getTranslation("dashboard.qr.copy-url"));
+        var copyButton = new Button(getTranslation("dashboard.qr.copy-url"));
         copyButton.getElement().executeJs("""
                 this.addEventListener('click', function() {
                     var url = $0;
@@ -241,7 +241,7 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         copyButton.addClickListener(e ->
                 Notification.show(getTranslation("dashboard.qr.copied"), 2000, Notification.Position.BOTTOM_START));
 
-        VerticalLayout dialogContent = new VerticalLayout(qrImage, urlSpan, copyButton);
+        var dialogContent = new VerticalLayout(qrImage, urlSpan, copyButton);
         dialogContent.setAlignItems(Alignment.CENTER);
 
         dialog.add(dialogContent);
@@ -250,20 +250,23 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
     }
 
     private void showCreateDialog() {
-        Dialog dialog = new Dialog();
+        var dialog = new Dialog();
         dialog.setHeaderTitle(getTranslation("dashboard.create.title"));
 
-        TextField titleField = new TextField(getTranslation("dashboard.create.form-title"));
+        var titleField = new TextField(getTranslation("dashboard.create.form-title"));
         titleField.setWidthFull();
         titleField.setRequired(true);
 
-        TextField speakerField = new TextField(getTranslation("dashboard.create.speaker"));
+        var speakerField = new TextField(getTranslation("dashboard.create.speaker"));
         speakerField.setWidthFull();
 
-        TextField topicField = new TextField(getTranslation("dashboard.create.topic"));
-        topicField.setWidthFull();
+        var dateField = new DatePicker(getTranslation("dashboard.create.date"));
+        dateField.setWidthFull();
 
-        Button createButton = new Button(getTranslation("dashboard.create.button"), e -> {
+        var locationField = new TextField(getTranslation("dashboard.create.location"));
+        locationField.setWidthFull();
+
+        var createButton = new Button(getTranslation("dashboard.create.button"), e -> {
             if (titleField.getValue().trim().isEmpty()) {
                 titleField.setInvalid(true);
                 return;
@@ -271,7 +274,8 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
             formService.createFormFromTemplate(
                     titleField.getValue().trim(),
                     speakerField.getValue().trim(),
-                    topicField.getValue().trim(),
+                    dateField.getValue(),
+                    locationField.getValue().trim(),
                     getCurrentUserEmail()
             );
             dialog.close();
@@ -280,12 +284,12 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         });
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button cancelButton = new Button(getTranslation("dashboard.create.cancel"), e -> dialog.close());
+        var cancelButton = new Button(getTranslation("dashboard.create.cancel"), e -> dialog.close());
 
-        VerticalLayout content = new VerticalLayout(titleField, speakerField, topicField);
+        var content = new VerticalLayout(titleField, speakerField, dateField, locationField);
         content.setPadding(false);
 
-        HorizontalLayout footer = new HorizontalLayout(createButton, cancelButton);
+        var footer = new HorizontalLayout(createButton, cancelButton);
 
         dialog.add(content);
         dialog.getFooter().add(footer);

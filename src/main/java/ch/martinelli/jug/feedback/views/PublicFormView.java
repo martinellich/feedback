@@ -2,7 +2,6 @@ package ch.martinelli.jug.feedback.views;
 
 import ch.martinelli.jug.feedback.entity.FeedbackAnswer;
 import ch.martinelli.jug.feedback.entity.FeedbackForm;
-import ch.martinelli.jug.feedback.entity.FeedbackQuestion;
 import ch.martinelli.jug.feedback.entity.FormStatus;
 import ch.martinelli.jug.feedback.entity.QuestionType;
 import ch.martinelli.jug.feedback.service.FormService;
@@ -22,9 +21,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Route("form")
 @AnonymousAllowed
@@ -49,7 +46,7 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
 
     @Override
     public void setParameter(BeforeEvent event, String token) {
-        Optional<FeedbackForm> optForm = formService.getFormByPublicToken(token);
+        var optForm = formService.getFormByPublicToken(token);
 
         if (optForm.isEmpty()) {
             add(new H2(getTranslation("form.not-found")),
@@ -57,7 +54,7 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
             return;
         }
 
-        FeedbackForm form = optForm.get();
+        var form = optForm.get();
 
         if (form.getStatus() != FormStatus.PUBLIC) {
             add(new H2(getTranslation("form.not-available")),
@@ -70,29 +67,32 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
     }
 
     private void buildForm(FeedbackForm form) {
-        H2 title = new H2(form.getTitle());
+        var title = new H2(form.getTitle());
         add(title);
 
         if (form.getSpeakerName() != null && !form.getSpeakerName().isEmpty()) {
             add(new Paragraph(getTranslation("form.speaker", form.getSpeakerName())));
         }
-        if (form.getTopic() != null && !form.getTopic().isEmpty()) {
-            add(new Paragraph(getTranslation("form.topic", form.getTopic())));
+        if (form.getEventDate() != null) {
+            add(new Paragraph(getTranslation("form.date", form.getEventDate().toString())));
+        }
+        if (form.getLocation() != null && !form.getLocation().isEmpty()) {
+            add(new Paragraph(getTranslation("form.location", form.getLocation())));
         }
 
         add(new Paragraph(getTranslation("form.rating.instructions")));
 
-        for (FeedbackQuestion question : form.getQuestions()) {
+        for (var question : form.getQuestions()) {
             add(new H3(question.getOrderIndex() + ". " + question.getQuestionText()));
 
             if (question.getQuestionType() == QuestionType.RATING) {
-                RadioButtonGroup<Integer> ratingGroup = new RadioButtonGroup<>();
+                var ratingGroup = new RadioButtonGroup<Integer>();
                 ratingGroup.setItems(1, 2, 3, 4, 5);
                 ratingGroup.setItemLabelGenerator(i -> getTranslation("form.rating." + i));
                 add(ratingGroup);
                 ratingGroups.put(question.getId(), ratingGroup);
             } else {
-                TextArea textArea = new TextArea();
+                var textArea = new TextArea();
                 textArea.setPlaceholder(getTranslation("form.text.placeholder"));
                 textArea.setWidthFull();
                 textArea.setMinHeight("100px");
@@ -101,26 +101,26 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
             }
         }
 
-        Button submitButton = new Button(getTranslation("form.submit"), e -> submitFeedback());
+        var submitButton = new Button(getTranslation("form.submit"), e -> submitFeedback());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
         add(submitButton);
     }
 
     private void submitFeedback() {
-        List<FeedbackAnswer> answers = new ArrayList<>();
+        var answers = new ArrayList<FeedbackAnswer>();
 
-        for (FeedbackQuestion question : currentForm.getQuestions()) {
-            FeedbackAnswer answer = new FeedbackAnswer();
+        for (var question : currentForm.getQuestions()) {
+            var answer = new FeedbackAnswer();
             answer.setQuestion(question);
 
             if (question.getQuestionType() == QuestionType.RATING) {
-                RadioButtonGroup<Integer> group = ratingGroups.get(question.getId());
+                var group = ratingGroups.get(question.getId());
                 if (group != null && group.getValue() != null) {
                     answer.setRatingValue(group.getValue());
                 }
             } else {
-                TextArea textArea = textAreas.get(question.getId());
+                var textArea = textAreas.get(question.getId());
                 if (textArea != null && !textArea.getValue().trim().isEmpty()) {
                     answer.setTextValue(textArea.getValue().trim());
                 }

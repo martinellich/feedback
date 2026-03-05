@@ -19,13 +19,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
@@ -52,7 +49,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
         setJustifyContentMode(JustifyContentMode.CENTER);
         setSizeFull();
 
-        H2 title = new H2(getTranslation("login.title"));
+        var title = new H2(getTranslation("login.title"));
 
         emailField.setLabel(getTranslation("login.email"));
         emailField.setPlaceholder(getTranslation("login.email.placeholder"));
@@ -73,11 +70,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
         loginButton.setWidth("300px");
         loginButton.setVisible(false);
 
-        Span version = new Span(getTranslation("login.version", buildProperties.getVersion()));
+        var version = new Span(getTranslation("login.version", buildProperties.getVersion()));
         version.getStyle().set("color", "var(--lumo-secondary-text-color)")
                 .set("font-size", "var(--lumo-font-size-s)");
 
         add(title, emailField, sendCodeButton, codeField, loginButton, version);
+        emailField.focus();
     }
 
     @Override
@@ -86,7 +84,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
     }
 
     private void sendCode() {
-        String email = emailField.getValue().trim();
+        var email = emailField.getValue().trim();
         if (email.isEmpty() || emailField.isInvalid()) {
             Notification.show(getTranslation("login.error.invalid-email"), 3000, Notification.Position.MIDDLE);
             return;
@@ -107,23 +105,23 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
     }
 
     private void authenticate() {
-        String code = codeField.getValue().trim();
+        var code = codeField.getValue().trim();
         if (code.isEmpty()) {
             Notification.show(getTranslation("login.error.empty-code"), 3000, Notification.Position.MIDDLE);
             return;
         }
 
         if (tokenService.validateCode(currentEmail, code)) {
-            UsernamePasswordAuthenticationToken auth =
+            var auth =
                 UsernamePasswordAuthenticationToken.authenticated(
                     currentEmail, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
                 );
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            var context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(auth);
             SecurityContextHolder.setContext(context);
 
-            VaadinServletRequest vaadinRequest = (VaadinServletRequest) VaadinRequest.getCurrent();
-            HttpSession session = vaadinRequest.getHttpServletRequest().getSession(true);
+            var vaadinRequest = (VaadinServletRequest) VaadinRequest.getCurrent();
+            var session = vaadinRequest.getHttpServletRequest().getSession(true);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
             UI.getCurrent().navigate(DashboardView.class);
@@ -135,7 +133,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             event.forwardTo(DashboardView.class);
         }

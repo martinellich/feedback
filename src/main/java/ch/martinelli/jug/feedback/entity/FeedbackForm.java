@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,9 @@ public class FeedbackForm {
 
     private String speakerName;
 
-    private String topic;
+    private LocalDate eventDate;
+
+    private String location;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,8 +49,11 @@ public class FeedbackForm {
     public String getSpeakerName() { return speakerName; }
     public void setSpeakerName(String speakerName) { this.speakerName = speakerName; }
 
-    public String getTopic() { return topic; }
-    public void setTopic(String topic) { this.topic = topic; }
+    public LocalDate getEventDate() { return eventDate; }
+    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
 
     public FormStatus getStatus() { return status; }
     public void setStatus(FormStatus status) { this.status = status; }
