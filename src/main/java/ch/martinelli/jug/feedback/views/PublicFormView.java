@@ -17,11 +17,14 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Route("form")
 @AnonymousAllowed
@@ -31,6 +34,7 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
     private final Map<Long, RadioButtonGroup<Integer>> ratingGroups = new HashMap<>();
     private final Map<Long, TextArea> textAreas = new HashMap<>();
     private FeedbackForm currentForm;
+    private String currentToken;
 
     public PublicFormView(FormService formService) {
         this.formService = formService;
@@ -62,7 +66,14 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
             return;
         }
 
+        if (hasAlreadySubmitted(token)) {
+            add(new H2(getTranslation("form.already-submitted")),
+                    new Paragraph(getTranslation("form.already-submitted.message")));
+            return;
+        }
+
         currentForm = form;
+        currentToken = token;
         buildForm(form);
     }
 
@@ -131,9 +142,28 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
         }
 
         formService.submitResponse(currentForm.getId(), answers);
+        markAsSubmitted(currentToken);
 
         removeAll();
         add(new H2(getTranslation("form.thank-you")),
                 new Paragraph(getTranslation("form.thank-you.message")));
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean hasAlreadySubmitted(String token) {
+        var session = VaadinSession.getCurrent();
+        var submitted = (Set<String>) session.getAttribute("submittedForms");
+        return submitted != null && submitted.contains(token);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void markAsSubmitted(String token) {
+        var session = VaadinSession.getCurrent();
+        var submitted = (Set<String>) session.getAttribute("submittedForms");
+        if (submitted == null) {
+            submitted = new HashSet<>();
+        }
+        submitted.add(token);
+        session.setAttribute("submittedForms", submitted);
     }
 }

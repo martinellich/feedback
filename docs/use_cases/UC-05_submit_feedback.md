@@ -12,6 +12,7 @@
 
 - Benutzer hat den Formular-Link oder QR-Code
 - Formular existiert und ist im Status PUBLIC
+- Benutzer hat in der aktuellen Sitzung noch kein Feedback fuer dieses Formular abgegeben
 
 ## Main Success Scenario
 
@@ -24,7 +25,8 @@
 5. Benutzer fuellt das Formular aus
 6. Benutzer klickt "Absenden"
 7. System erstellt FeedbackResponse mit FeedbackAnswers
-8. System zeigt Dankesseite
+8. System markiert Formular-Token als abgegeben in der Sitzung
+9. System zeigt Dankesseite
 
 ## Alternative Flows
 
@@ -41,6 +43,13 @@
 **Flow:**
 
 1. System zeigt "Formular nicht verfuegbar" Meldung
+
+### A3: Feedback bereits abgegeben
+
+**Trigger:** Benutzer hat in der aktuellen Sitzung bereits Feedback fuer dieses Formular abgegeben
+**Flow:**
+
+1. System zeigt "Bereits abgegeben" Meldung
 
 ## Postconditions
 
@@ -71,3 +80,7 @@ Jede Abgabe erzeugt eine neue FeedbackResponse
 ### BR-010: Keine Authentifizierung
 
 Keine Authentifizierung erforderlich fuer die Feedback-Abgabe
+
+### BR-011: Einmalige Abgabe pro Sitzung
+
+Pro Browser-Sitzung kann nur einmal Feedback fuer ein Formular abgegeben werden. Die Pruefung erfolgt ueber die VaadinSession.
