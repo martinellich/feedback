@@ -1,14 +1,17 @@
-name: CI
+name: Release
 
 on:
   push:
-    branches:
-      - develop
-  workflow_dispatch:
+    tags:
+      - '*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
     steps:
       - uses: actions/checkout@v6
@@ -29,6 +32,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Test
-        run: ./mvnw -B test
+      - name: Maven Build, Test, and Sonar
+        run: ./mvnw -B package
 
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
