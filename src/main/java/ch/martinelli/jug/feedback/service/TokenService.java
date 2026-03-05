@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class TokenService {
@@ -29,14 +28,14 @@ public class TokenService {
 
     @Transactional
     public void sendLoginCode(String email) {
-        String code = String.format("%08d", random.nextInt(100_000_000));
-        AccessToken token = new AccessToken();
+        var code = String.format("%08d", random.nextInt(100_000_000));
+        var token = new AccessToken();
         token.setEmail(email);
         token.setToken(code);
         token.setExpiresAt(LocalDateTime.now().plusMinutes(10));
         tokenRepository.save(token);
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        var message = new SimpleMailMessage();
         message.setFrom("simon@martinelli.ch");
         message.setTo(email);
         message.setSubject("JUG Feedback - Your Login Code");
@@ -48,11 +47,11 @@ public class TokenService {
 
     @Transactional
     public boolean validateCode(String email, String code) {
-        Optional<AccessToken> optToken = tokenRepository.findByEmailAndTokenAndUsedFalse(email, code);
+        var optToken = tokenRepository.findByEmailAndTokenAndUsedFalse(email, code);
         if (optToken.isEmpty()) {
             return false;
         }
-        AccessToken token = optToken.get();
+        var token = optToken.get();
         if (token.getExpiresAt() != null && token.getExpiresAt().isBefore(LocalDateTime.now())) {
             return false;
         }

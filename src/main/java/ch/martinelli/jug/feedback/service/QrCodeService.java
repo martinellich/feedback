@@ -15,9 +15,9 @@ public class QrCodeService {
 
     public byte[] generateQrCode(String content, int width, int height) {
         try {
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, width, height);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            var qrCodeWriter = new QRCodeWriter();
+            var bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, width, height);
+            var outputStream = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
             return outputStream.toByteArray();
         } catch (WriterException | IOException e) {
