@@ -1,19 +1,19 @@
-# UC-06: Ergebnisse anzeigen
+# Use Case: Ergebnisse anzeigen
 
-## Beschreibung
-Der Formular-Besitzer oder ein geteilter Benutzer betrachtet die Feedback-Ergebnisse.
+## Overview
 
-## Akteur
-Formular-Besitzer, Geteilter Benutzer
+**Use Case ID:** UC-06
+**Use Case Name:** Ergebnisse anzeigen
+**Primary Actor:** Formular-Besitzer, Geteilter Benutzer
+**Goal:** Feedback-Ergebnisse eines Formulars betrachten
+**Status:** Implemented
 
-## Vorbedingungen
+## Preconditions
+
 - Benutzer ist authentifiziert
 - Benutzer hat Zugriff auf das Formular (Besitzer oder geteilt)
 
-## Nachbedingungen
-- Keine Aenderungen am System
-
-## Hauptszenario
+## Main Success Scenario
 
 1. Benutzer klickt "Ergebnisse" im Dashboard
 2. System prueft Zugriffsberechtigung
@@ -25,20 +25,43 @@ Formular-Besitzer, Geteilter Benutzer
    - Fragentext mit Nummer
    - Liste aller nicht-leeren Textantworten als Aufzaehlung
 
-## Alternativszenarien
+## Alternative Flows
 
-**2a. Kein Zugriff**
+### A1: Kein Zugriff
+
+**Trigger:** Benutzer hat keine Berechtigung fuer das Formular
+**Flow:**
+
 1. System leitet zum Dashboard weiter
 
-**3a. Keine Antworten vorhanden**
+### A2: Keine Antworten vorhanden
+
+**Trigger:** Es wurden noch keine Feedbacks abgegeben
+**Flow:**
+
 1. System zeigt "Noch keine Antworten" Meldung
 
-## Geschaeftsregeln
-- Ergebnisse sind unabhaengig vom Formularstatus einsehbar
-- Durchschnittsberechnung nur ueber nicht-null Bewertungen
-- Leere Textantworten werden nicht angezeigt
+## Postconditions
 
-## Beteiligte Klassen
-- `views/ResultsView.java`
-- `service/FormService.java`
-- `entity/FeedbackAnswer.java`
+### Success Postconditions
+
+- Keine Aenderungen am System
+
+### Failure Postconditions
+
+- Keine Aenderungen am System
+- Benutzer wird zum Dashboard weitergeleitet
+
+## Business Rules
+
+### BR-011: Statusunabhaengige Ergebnisse
+
+Ergebnisse sind unabhaengig vom Formularstatus einsehbar
+
+### BR-012: Durchschnittsberechnung
+
+Durchschnittsberechnung nur ueber nicht-null Bewertungen
+
+### BR-013: Leere Textantworten
+
+Leere Textantworten werden nicht angezeigt

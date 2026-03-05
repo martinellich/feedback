@@ -1,28 +1,32 @@
-# UC-10: Formular wieder oeffnen
+# Use Case: Formular wieder oeffnen
 
-## Beschreibung
-Der Formular-Besitzer oeffnet ein geschlossenes Formular wieder, sodass erneut Feedbacks abgegeben werden koennen.
+## Overview
 
-## Akteur
-Formular-Besitzer
+**Use Case ID:** UC-10
+**Use Case Name:** Formular wieder oeffnen
+**Primary Actor:** Formular-Besitzer
+**Goal:** Ein geschlossenes Formular wieder oeffnen, sodass erneut Feedbacks abgegeben werden koennen
+**Status:** Implemented
 
-## Vorbedingungen
+## Preconditions
+
 - Benutzer ist authentifiziert
 - Formular ist im Status CLOSED
 - Benutzer ist Besitzer des Formulars
 
-## Nachbedingungen
-- Formularstatus ist PUBLIC
-- Anonyme Benutzer koennen wieder Feedback abgeben
-
-## Hauptszenario
+## Main Success Scenario
 
 1. Benutzer klickt "Wieder oeffnen" im Dashboard
 2. System aendert Formularstatus von CLOSED auf PUBLIC
 3. Dashboard wird aktualisiert
 
-## Beteiligte Klassen
-- `views/DashboardView.java`
-- `service/FormService.java`
-- `entity/FeedbackForm.java`
-- `entity/FormStatus.java`
+## Postconditions
+
+### Success Postconditions
+
+- Formularstatus ist PUBLIC
+- Anonyme Benutzer koennen wieder Feedback abgeben
+
+### Failure Postconditions
+
+- Formularstatus bleibt CLOSED

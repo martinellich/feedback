@@ -1,29 +1,33 @@
-# UC-09: Formular schliessen
+# Use Case: Formular schliessen
 
-## Beschreibung
-Der Formular-Besitzer schliesst ein oeffentliches Formular, sodass keine weiteren Feedbacks abgegeben werden koennen.
+## Overview
 
-## Akteur
-Formular-Besitzer
+**Use Case ID:** UC-09
+**Use Case Name:** Formular schliessen
+**Primary Actor:** Formular-Besitzer
+**Goal:** Ein oeffentliches Formular schliessen, sodass keine weiteren Feedbacks abgegeben werden koennen
+**Status:** Implemented
 
-## Vorbedingungen
+## Preconditions
+
 - Benutzer ist authentifiziert
 - Formular ist im Status PUBLIC
 - Benutzer ist Besitzer des Formulars
 
-## Nachbedingungen
-- Formularstatus ist CLOSED
-- Keine neuen Feedbacks moeglich
-- Bestehende Ergebnisse bleiben erhalten
-
-## Hauptszenario
+## Main Success Scenario
 
 1. Benutzer klickt "Schliessen" im Dashboard
 2. System aendert Formularstatus von PUBLIC auf CLOSED
 3. Dashboard wird aktualisiert
 
-## Beteiligte Klassen
-- `views/DashboardView.java`
-- `service/FormService.java`
-- `entity/FeedbackForm.java`
-- `entity/FormStatus.java`
+## Postconditions
+
+### Success Postconditions
+
+- Formularstatus ist CLOSED
+- Keine neuen Feedbacks moeglich
+- Bestehende Ergebnisse bleiben erhalten
+
+### Failure Postconditions
+
+- Formularstatus bleibt PUBLIC

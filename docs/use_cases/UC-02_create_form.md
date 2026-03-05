@@ -1,20 +1,18 @@
-# UC-02: Feedback-Formular erstellen
+# Use Case: Feedback-Formular erstellen
 
-## Beschreibung
-Ein Benutzer erstellt ein neues Feedback-Formular basierend auf einer Vorlage mit vordefinierten Fragen.
+## Overview
 
-## Akteur
-Authentifizierter Benutzer
+**Use Case ID:** UC-02
+**Use Case Name:** Feedback-Formular erstellen
+**Primary Actor:** Authentifizierter Benutzer
+**Goal:** Ein neues Feedback-Formular basierend auf einer Vorlage mit vordefinierten Fragen erstellen
+**Status:** Implemented
 
-## Vorbedingungen
+## Preconditions
+
 - Benutzer ist authentifiziert
 
-## Nachbedingungen
-- Neues Formular im Status DRAFT erstellt
-- 13 Vorlagenfragen (9 Bewertung, 4 Text) zugeordnet
-- Benutzer ist Besitzer des Formulars
-
-## Hauptszenario
+## Main Success Scenario
 
 1. Benutzer klickt auf "Neu erstellen" im Dashboard
 2. System zeigt Dialog mit Eingabefeldern
@@ -22,22 +20,38 @@ Authentifizierter Benutzer
 4. Benutzer gibt optional Speaker, Datum und Ort ein
 5. Benutzer bestaetigt
 6. System erstellt Formular im Status DRAFT mit eindeutigem publicToken (UUID)
-7. System fuegt 13 Vorlagenfragen hinzu
+7. System fuegt 13 Vorlagenfragen hinzu (9 Bewertung, 4 Text)
 8. Dashboard wird aktualisiert und Erfolgsmeldung angezeigt
 
-## Alternativszenarien
+## Alternative Flows
 
-**3a. Titel nicht ausgefuellt**
+### A1: Titel nicht ausgefuellt
+
+**Trigger:** Benutzer laesst das Pflichtfeld Titel leer
+**Flow:**
+
 1. Validierung verhindert Erstellung
 2. Benutzer muss Titel eingeben
 
-## Vorlagenfragen
-- 9 Bewertungsfragen (RATING, Skala 1-5)
-- 4 Textfragen (TEXT, Freitext)
-- Vordefinierte deutschsprachige Fragen zu Praesentationen
+## Postconditions
 
-## Beteiligte Klassen
-- `views/DashboardView.java`
-- `service/FormService.java`
-- `entity/FeedbackForm.java`
-- `entity/FeedbackQuestion.java`
+### Success Postconditions
+
+- Neues Formular im Status DRAFT erstellt
+- 13 Vorlagenfragen (9 Bewertung, 4 Text) zugeordnet
+- Benutzer ist Besitzer des Formulars
+
+### Failure Postconditions
+
+- Kein Formular wird erstellt
+- Dashboard bleibt unveraendert
+
+## Business Rules
+
+### BR-005: Vorlagenfragen
+
+Jedes neue Formular erhaelt 9 Bewertungsfragen (RATING, Skala 1-5) und 4 Textfragen (TEXT, Freitext) als vordefinierte deutschsprachige Fragen zu Praesentationen
+
+### BR-006: Eindeutiger Public Token
+
+Jedes Formular erhaelt einen eindeutigen publicToken (UUID) fuer den oeffentlichen Zugang

@@ -1,20 +1,19 @@
-# UC-05: Feedback abgeben
+# Use Case: Feedback abgeben
 
-## Beschreibung
-Ein anonymer Benutzer gibt Feedback ueber ein oeffentliches Formular ab.
+## Overview
 
-## Akteur
-Anonymer Benutzer
+**Use Case ID:** UC-05
+**Use Case Name:** Feedback abgeben
+**Primary Actor:** Anonymer Benutzer
+**Goal:** Feedback ueber ein oeffentliches Formular abgeben
+**Status:** Implemented
 
-## Vorbedingungen
+## Preconditions
+
 - Benutzer hat den Formular-Link oder QR-Code
 - Formular existiert und ist im Status PUBLIC
 
-## Nachbedingungen
-- Neue FeedbackResponse mit FeedbackAnswers gespeichert
-- Dankesseite wird angezeigt
-
-## Hauptszenario
+## Main Success Scenario
 
 1. Benutzer oeffnet `/form/{publicToken}` (via Link oder QR-Code)
 2. System laedt Formular anhand des Tokens
@@ -27,22 +26,48 @@ Anonymer Benutzer
 7. System erstellt FeedbackResponse mit FeedbackAnswers
 8. System zeigt Dankesseite
 
-## Alternativszenarien
+## Alternative Flows
 
-**2a. Formular nicht gefunden**
+### A1: Formular nicht gefunden
+
+**Trigger:** publicToken existiert nicht in der Datenbank
+**Flow:**
+
 1. System zeigt "Formular nicht gefunden" Meldung
 
-**2b. Formular nicht oeffentlich**
+### A2: Formular nicht oeffentlich
+
+**Trigger:** Formular ist nicht im Status PUBLIC
+**Flow:**
+
 1. System zeigt "Formular nicht verfuegbar" Meldung
 
-## Geschaeftsregeln
-- Bewertungen sind 1-5 (Sehr schlecht bis Sehr gut)
-- Textantworten sind optional (nur nicht-leere werden gespeichert)
-- Jede Abgabe erzeugt eine neue FeedbackResponse
-- Keine Authentifizierung erforderlich
+## Postconditions
 
-## Beteiligte Klassen
-- `views/PublicFormView.java`
-- `service/FormService.java`
-- `entity/FeedbackResponse.java`
-- `entity/FeedbackAnswer.java`
+### Success Postconditions
+
+- Neue FeedbackResponse mit FeedbackAnswers gespeichert
+- Dankesseite wird angezeigt
+
+### Failure Postconditions
+
+- Keine FeedbackResponse wird erstellt
+- Fehlermeldung wird angezeigt
+
+## Business Rules
+
+### BR-007: Bewertungsskala
+
+Bewertungen sind 1-5 (Sehr schlecht bis Sehr gut)
+
+### BR-008: Optionale Textantworten
+
+Textantworten sind optional (nur nicht-leere werden gespeichert)
+
+### BR-009: Neue Response pro Abgabe
+
+Jede Abgabe erzeugt eine neue FeedbackResponse
+
+### BR-010: Keine Authentifizierung
+
+Keine Authentifizierung erforderlich fuer die Feedback-Abgabe

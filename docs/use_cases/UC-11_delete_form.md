@@ -1,31 +1,45 @@
-# UC-11: Formular loeschen
+# Use Case: Formular loeschen
 
-## Beschreibung
-Der Formular-Besitzer loescht ein geschlossenes Formular dauerhaft.
+## Overview
 
-## Akteur
-Formular-Besitzer
+**Use Case ID:** UC-11
+**Use Case Name:** Formular loeschen
+**Primary Actor:** Formular-Besitzer
+**Goal:** Ein geschlossenes Formular dauerhaft loeschen
+**Status:** Implemented
 
-## Vorbedingungen
+## Preconditions
+
 - Benutzer ist authentifiziert
 - Formular ist im Status CLOSED
 - Benutzer ist Besitzer des Formulars
 
-## Nachbedingungen
-- Formular und alle zugehoerigen Daten geloescht (Fragen, Antworten, Feedbacks, Freigaben)
-
-## Hauptszenario
+## Main Success Scenario
 
 1. Benutzer klickt "Loeschen" im Dashboard
 2. System loescht Formular mit allen abhaengigen Daten (Kaskade)
 3. Dashboard wird aktualisiert
 
-## Geschaeftsregeln
-- Loeschen ist nur fuer geschlossene Formulare moeglich
-- Loeschen ist nicht rueckgaengig zu machen
-- Kaskadierendes Loeschen: Fragen, Antworten, Feedbacks, Freigaben
+## Postconditions
 
-## Beteiligte Klassen
-- `views/DashboardView.java`
-- `service/FormService.java`
-- `entity/FeedbackForm.java`
+### Success Postconditions
+
+- Formular und alle zugehoerigen Daten geloescht (Fragen, Antworten, Feedbacks, Freigaben)
+
+### Failure Postconditions
+
+- Formular bleibt unveraendert
+
+## Business Rules
+
+### BR-021: Nur geschlossene Formulare
+
+Loeschen ist nur fuer geschlossene Formulare moeglich
+
+### BR-022: Nicht rueckgaengig machbar
+
+Loeschen ist nicht rueckgaengig zu machen
+
+### BR-023: Kaskadierendes Loeschen
+
+Kaskadierendes Loeschen aller abhaengigen Daten: Fragen, Antworten, Feedbacks, Freigaben

@@ -1,30 +1,45 @@
-# UC-08: QR-Code generieren
+# Use Case: QR-Code generieren
 
-## Beschreibung
-Ein Benutzer generiert einen QR-Code fuer den oeffentlichen Formular-Link.
+## Overview
 
-## Akteur
-Formular-Besitzer, Geteilter Benutzer
+**Use Case ID:** UC-08
+**Use Case Name:** QR-Code generieren
+**Primary Actor:** Formular-Besitzer, Geteilter Benutzer
+**Goal:** Einen QR-Code fuer den oeffentlichen Formular-Link generieren
+**Status:** Implemented
 
-## Vorbedingungen
+## Preconditions
+
 - Benutzer ist authentifiziert
 - Benutzer hat Zugriff auf das Formular
 
-## Nachbedingungen
-- Keine Aenderungen am System
-
-## Hauptszenario
+## Main Success Scenario
 
 1. Benutzer klickt "QR-Code" im Dashboard
 2. System generiert QR-Code als PNG-Bild fuer die Formular-URL
 3. System zeigt Dialog mit QR-Code-Bild und URL
 4. Benutzer kann URL in die Zwischenablage kopieren
 
-## Details
-- URL-Format: `{scheme}://{server}:{port}/form/{publicToken}`
-- QR-Code wird als PNG-Bild generiert (ZXing-Bibliothek)
-- Verfuegbar fuer alle Formularstatus (DRAFT, PUBLIC, CLOSED)
+## Postconditions
 
-## Beteiligte Klassen
-- `views/DashboardView.java`
-- `service/QrCodeService.java`
+### Success Postconditions
+
+- Keine Aenderungen am System
+
+### Failure Postconditions
+
+- Keine Aenderungen am System
+
+## Business Rules
+
+### BR-018: URL-Format
+
+URL-Format: `{scheme}://{server}:{port}/form/{publicToken}`
+
+### BR-019: QR-Code-Format
+
+QR-Code wird als PNG-Bild generiert (ZXing-Bibliothek)
+
+### BR-020: Statusunabhaengige Verfuegbarkeit
+
+QR-Code ist fuer alle Formularstatus verfuegbar (DRAFT, PUBLIC, CLOSED)
