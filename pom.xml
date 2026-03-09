@@ -26,7 +26,7 @@
         <karibu-testing.version>2.7.0</karibu-testing.version>
         <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
         <jacoco.version>0.8.14</jacoco.version>
-        <sonar.organization>simasch</sonar.organization>
+        <sonar.organization>martinellich</sonar.organization>
     </properties>
 
     <dependencyManagement>
