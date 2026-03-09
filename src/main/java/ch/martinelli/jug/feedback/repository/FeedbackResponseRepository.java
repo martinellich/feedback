@@ -2,11 +2,8 @@ package ch.martinelli.jug.feedback.repository;
 
 import ch.martinelli.jug.feedback.entity.FeedbackResponse;
 import org.jooq.DSLContext;
-import org.jooq.Records;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static ch.martinelli.jug.feedback.jooq.Tables.FEEDBACK_RESPONSE;
 
