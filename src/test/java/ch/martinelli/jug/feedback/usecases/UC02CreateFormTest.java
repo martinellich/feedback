@@ -1,7 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
-import ch.martinelli.jug.feedback.entity.FeedbackForm;
+
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.DashboardView;
 import com.vaadin.flow.component.UI;

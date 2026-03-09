@@ -32,7 +32,9 @@ import java.util.List;
 @AnonymousAllowed
 public class LoginView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
 
-    private final TokenService tokenService;
+    private static final String FIELD_WIDTH = "300px";
+
+    private final transient TokenService tokenService;
 
     private final EmailField emailField = new EmailField();
     private final TextField codeField = new TextField();
@@ -53,21 +55,21 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
 
         emailField.setLabel(getTranslation("login.email"));
         emailField.setPlaceholder(getTranslation("login.email.placeholder"));
-        emailField.setWidth("300px");
+        emailField.setWidth(FIELD_WIDTH);
 
         sendCodeButton = new Button(getTranslation("login.send-code"), e -> sendCode());
         sendCodeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         sendCodeShortcut = sendCodeButton.addClickShortcut(Key.ENTER);
-        sendCodeButton.setWidth("300px");
+        sendCodeButton.setWidth(FIELD_WIDTH);
 
         codeField.setLabel(getTranslation("login.code"));
         codeField.setPlaceholder(getTranslation("login.code.placeholder"));
-        codeField.setWidth("300px");
+        codeField.setWidth(FIELD_WIDTH);
         codeField.setVisible(false);
 
         loginButton = new Button(getTranslation("login.login"), e -> authenticate());
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        loginButton.setWidth("300px");
+        loginButton.setWidth(FIELD_WIDTH);
         loginButton.setVisible(false);
 
         var version = new Span(getTranslation("login.version", buildProperties.getVersion()));

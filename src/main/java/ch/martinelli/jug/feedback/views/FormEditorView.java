@@ -23,9 +23,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @PermitAll
 public class FormEditorView extends VerticalLayout implements HasUrlParameter<Long>, HasDynamicTitle {
 
-    private final FormService formService;
-    private FeedbackForm currentForm;
-    private Grid<FeedbackQuestion> questionGrid;
+    private static final String FIELD_WIDTH = "300px";
+
+    private final transient FormService formService;
+    private transient FeedbackForm currentForm;
     private TextField titleField;
     private TextField speakerField;
     private DatePicker dateField;
@@ -65,19 +66,19 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
 
         titleField = new TextField(getTranslation("editor.form-title"));
         titleField.setValue(currentForm.getTitle() != null ? currentForm.getTitle() : "");
-        titleField.setWidth("300px");
+        titleField.setWidth(FIELD_WIDTH);
 
         speakerField = new TextField(getTranslation("editor.speaker"));
         speakerField.setValue(currentForm.getSpeakerName() != null ? currentForm.getSpeakerName() : "");
-        speakerField.setWidth("300px");
+        speakerField.setWidth(FIELD_WIDTH);
 
         dateField = new DatePicker(getTranslation("editor.date"));
         dateField.setValue(currentForm.getEventDate());
-        dateField.setWidth("300px");
+        dateField.setWidth(FIELD_WIDTH);
 
         locationField = new TextField(getTranslation("editor.location"));
         locationField.setValue(currentForm.getLocation() != null ? currentForm.getLocation() : "");
-        locationField.setWidth("300px");
+        locationField.setWidth(FIELD_WIDTH);
 
         var saveButton = new Button(getTranslation("editor.save"), e -> saveFormDetails());
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -86,7 +87,7 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
         formFields.setAlignItems(Alignment.BASELINE);
         formFields.setWidthFull();
 
-        questionGrid = new Grid<>(FeedbackQuestion.class, false);
+        var questionGrid = new Grid<>(FeedbackQuestion.class, false);
         questionGrid.addColumn(FeedbackQuestion::getOrderIndex).setHeader(getTranslation("editor.column.order")).setWidth("60px");
         questionGrid.addColumn(FeedbackQuestion::getQuestionText).setHeader(getTranslation("editor.column.question")).setAutoWidth(true);
         questionGrid.addColumn(q -> q.getQuestionType().name()).setHeader(getTranslation("editor.column.type")).setWidth("100px");

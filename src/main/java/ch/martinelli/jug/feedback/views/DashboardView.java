@@ -32,8 +32,8 @@ import java.io.ByteArrayInputStream;
 @PermitAll
 public class DashboardView extends VerticalLayout implements HasDynamicTitle {
 
-    private final FormService formService;
-    private final QrCodeService qrCodeService;
+    private final transient FormService formService;
+    private final transient QrCodeService qrCodeService;
     private Grid<FeedbackForm> grid;
 
     public DashboardView(FormService formService, QrCodeService qrCodeService) {

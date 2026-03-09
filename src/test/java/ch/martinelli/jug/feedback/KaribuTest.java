@@ -49,10 +49,6 @@ public abstract class KaribuTest {
     }
 
     protected void login(String user, final List<String> roles) {
-        final List<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(it -> new SimpleGrantedAuthority("ROLE_" + it))
-                .toList();
-
         var auth = UsernamePasswordAuthenticationToken.authenticated(
                 user, null, roles.stream().map(r -> new SimpleGrantedAuthority("ROLE_" + r)).toList()
         );

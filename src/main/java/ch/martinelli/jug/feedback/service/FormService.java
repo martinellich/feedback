@@ -40,27 +40,28 @@ public class FormService {
         form.setOwnerEmail(ownerEmail);
         form = formRepository.save(form);
 
-        var templateQuestions = new String[][]{
-            {"Inhalt des Vortrags", "RATING"},
-            {"Präsentation und Aufbau", "RATING"},
-            {"Fachkompetenz des Referenten", "RATING"},
-            {"Verständlichkeit", "RATING"},
-            {"Praxisrelevanz", "RATING"},
-            {"Aktualität des Themas", "RATING"},
-            {"Tempo des Vortrags", "RATING"},
-            {"Interaktivität", "RATING"},
-            {"Gesamteindruck", "RATING"},
-            {"Was hat Ihnen besonders gut gefallen?", "TEXT"},
-            {"Was könnte verbessert werden?", "TEXT"},
-            {"Weitere Anmerkungen oder Vorschläge?", "TEXT"},
-            {"Welche Themen wünschen Sie sich für zukünftige Veranstaltungen?", "TEXT"}
-        };
+        var templateQuestions = List.of(
+            new TemplateQuestion("Inhalt des Vortrags", QuestionType.RATING),
+            new TemplateQuestion("Präsentation und Aufbau", QuestionType.RATING),
+            new TemplateQuestion("Fachkompetenz des Referenten", QuestionType.RATING),
+            new TemplateQuestion("Verständlichkeit", QuestionType.RATING),
+            new TemplateQuestion("Praxisrelevanz", QuestionType.RATING),
+            new TemplateQuestion("Aktualität des Themas", QuestionType.RATING),
+            new TemplateQuestion("Tempo des Vortrags", QuestionType.RATING),
+            new TemplateQuestion("Interaktivität", QuestionType.RATING),
+            new TemplateQuestion("Gesamteindruck", QuestionType.RATING),
+            new TemplateQuestion("Was hat Ihnen besonders gut gefallen?", QuestionType.TEXT),
+            new TemplateQuestion("Was könnte verbessert werden?", QuestionType.TEXT),
+            new TemplateQuestion("Weitere Anmerkungen oder Vorschläge?", QuestionType.TEXT),
+            new TemplateQuestion("Welche Themen wünschen Sie sich für zukünftige Veranstaltungen?", QuestionType.TEXT)
+        );
 
-        for (var i = 0; i < templateQuestions.length; i++) {
+        for (var i = 0; i < templateQuestions.size(); i++) {
+            var tq = templateQuestions.get(i);
             var question = new FeedbackQuestion();
             question.setForm(form);
-            question.setQuestionText(templateQuestions[i][0]);
-            question.setQuestionType(QuestionType.valueOf(templateQuestions[i][1]));
+            question.setQuestionText(tq.text());
+            question.setQuestionType(tq.type());
             question.setOrderIndex(i + 1);
             questionRepository.save(question);
         }
@@ -175,4 +176,6 @@ public class FormService {
     public List<FeedbackAnswer> getTextAnswers(Long questionId) {
         return answerRepository.findByQuestionIdAndTextValueIsNotNull(questionId);
     }
+
+    private record TemplateQuestion(String text, QuestionType type) {}
 }

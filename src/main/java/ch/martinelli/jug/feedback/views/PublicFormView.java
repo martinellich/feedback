@@ -27,10 +27,10 @@ import java.util.Map;
 @AnonymousAllowed
 public class PublicFormView extends VerticalLayout implements HasUrlParameter<String>, HasDynamicTitle {
 
-    private final FormService formService;
+    private final transient FormService formService;
     private final Map<Long, RadioButtonGroup<Integer>> ratingGroups = new HashMap<>();
     private final Map<Long, TextArea> textAreas = new HashMap<>();
-    private FeedbackForm currentForm;
+    private transient FeedbackForm currentForm;
 
     public PublicFormView(FormService formService) {
         this.formService = formService;

@@ -18,7 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @PermitAll
 public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>, HasDynamicTitle {
 
-    private final FormService formService;
+    private final transient FormService formService;
 
     public ResultsView(FormService formService) {
         this.formService = formService;
@@ -66,19 +66,27 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
             add(new H3(question.getOrderIndex() + ". " + question.getQuestionText()));
 
             if (question.getQuestionType() == QuestionType.RATING) {
-                var avg = formService.getAverageRating(question.getId());
-                if (avg != null) {
-                    add(new Paragraph(getTranslation("results.average-rating", String.format("%.2f", avg))));
-                }
+                addRatingResult(question.getId());
             } else {
-                var textAnswers = formService.getTextAnswers(question.getId());
-                for (var answer : textAnswers) {
-                    if (answer.getTextValue() != null && !answer.getTextValue().trim().isEmpty()) {
-                        var p = new Paragraph("\u2022 " + answer.getTextValue());
-                        p.getStyle().set("margin-left", "20px");
-                        add(p);
-                    }
-                }
+                addTextResults(question.getId());
+            }
+        }
+    }
+
+    private void addRatingResult(Long questionId) {
+        var avg = formService.getAverageRating(questionId);
+        if (avg != null) {
+            add(new Paragraph(getTranslation("results.average-rating", String.format("%.2f", avg))));
+        }
+    }
+
+    private void addTextResults(Long questionId) {
+        var textAnswers = formService.getTextAnswers(questionId);
+        for (var answer : textAnswers) {
+            if (answer.getTextValue() != null && !answer.getTextValue().trim().isEmpty()) {
+                var p = new Paragraph("\u2022 " + answer.getTextValue());
+                p.getStyle().set("margin-left", "20px");
+                add(p);
             }
         }
     }
