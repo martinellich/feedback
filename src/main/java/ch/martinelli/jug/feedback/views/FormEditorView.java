@@ -19,6 +19,8 @@ import com.vaadin.flow.router.*;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
+
 @Route("editor")
 @PermitAll
 public class FormEditorView extends VerticalLayout implements HasUrlParameter<Long>, HasDynamicTitle {
@@ -62,22 +64,22 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
         var backButton = new Button(getTranslation("editor.back"),
             e -> UI.getCurrent().navigate(DashboardView.class));
 
-        var title = new H2(getTranslation("editor.title", currentForm.getTitle()));
+        var title = new H2(getTranslation("editor.title", currentForm.title()));
 
         titleField = new TextField(getTranslation("editor.form-title"));
-        titleField.setValue(currentForm.getTitle() != null ? currentForm.getTitle() : "");
+        titleField.setValue(currentForm.title() != null ? currentForm.title() : "");
         titleField.setWidth(FIELD_WIDTH);
 
         speakerField = new TextField(getTranslation("editor.speaker"));
-        speakerField.setValue(currentForm.getSpeakerName() != null ? currentForm.getSpeakerName() : "");
+        speakerField.setValue(currentForm.speakerName() != null ? currentForm.speakerName() : "");
         speakerField.setWidth(FIELD_WIDTH);
 
         dateField = new DatePicker(getTranslation("editor.date"));
-        dateField.setValue(currentForm.getEventDate());
+        dateField.setValue(currentForm.eventDate());
         dateField.setWidth(FIELD_WIDTH);
 
         locationField = new TextField(getTranslation("editor.location"));
-        locationField.setValue(currentForm.getLocation() != null ? currentForm.getLocation() : "");
+        locationField.setValue(currentForm.location() != null ? currentForm.location() : "");
         locationField.setWidth(FIELD_WIDTH);
 
         var saveButton = new Button(getTranslation("editor.save"), e -> saveFormDetails());
@@ -88,10 +90,10 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
         formFields.setWidthFull();
 
         var questionGrid = new Grid<>(FeedbackQuestion.class, false);
-        questionGrid.addColumn(FeedbackQuestion::getOrderIndex).setHeader(getTranslation("editor.column.order")).setWidth("60px");
-        questionGrid.addColumn(FeedbackQuestion::getQuestionText).setHeader(getTranslation("editor.column.question")).setAutoWidth(true);
-        questionGrid.addColumn(q -> q.getQuestionType().name()).setHeader(getTranslation("editor.column.type")).setWidth("100px");
-        questionGrid.setItems(currentForm.getQuestions());
+        questionGrid.addColumn(FeedbackQuestion::orderIndex).setHeader(getTranslation("editor.column.order")).setWidth("60px");
+        questionGrid.addColumn(FeedbackQuestion::questionText).setHeader(getTranslation("editor.column.question")).setAutoWidth(true);
+        questionGrid.addColumn(q -> q.questionType().name()).setHeader(getTranslation("editor.column.type")).setWidth("100px");
+        questionGrid.setItems(currentForm.questions());
         questionGrid.setHeight("400px");
 
         var newQuestionText = new TextField(getTranslation("editor.new-question"));
@@ -103,15 +105,15 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
 
         var addQuestionBtn = new Button(getTranslation("editor.add-question"), e -> {
             if (!newQuestionText.getValue().trim().isEmpty()) {
-                var q = new FeedbackQuestion();
-                q.setForm(currentForm);
-                q.setQuestionText(newQuestionText.getValue().trim());
-                q.setQuestionType(newQuestionType.getValue());
-                q.setOrderIndex(currentForm.getQuestions().size() + 1);
-                currentForm.getQuestions().add(q);
+                var q = new FeedbackQuestion(null, currentForm.id(),
+                        newQuestionText.getValue().trim(), newQuestionType.getValue(),
+                        currentForm.questions().size() + 1);
+                var updatedQuestions = new ArrayList<>(currentForm.questions());
+                updatedQuestions.add(q);
+                currentForm = currentForm.withQuestions(updatedQuestions);
                 formService.saveForm(currentForm);
-                currentForm = formService.getFormById(currentForm.getId()).orElseThrow();
-                questionGrid.setItems(currentForm.getQuestions());
+                currentForm = formService.getFormById(currentForm.id()).orElseThrow();
+                questionGrid.setItems(currentForm.questions());
                 newQuestionText.clear();
             }
         });
@@ -124,10 +126,11 @@ public class FormEditorView extends VerticalLayout implements HasUrlParameter<Lo
     }
 
     private void saveFormDetails() {
-        currentForm.setTitle(titleField.getValue().trim());
-        currentForm.setSpeakerName(speakerField.getValue().trim());
-        currentForm.setEventDate(dateField.getValue());
-        currentForm.setLocation(locationField.getValue().trim());
+        currentForm = currentForm.withDetails(
+                titleField.getValue().trim(),
+                speakerField.getValue().trim(),
+                dateField.getValue(),
+                locationField.getValue().trim());
         formService.saveForm(currentForm);
         Notification.show(getTranslation("editor.saved"), 2000, Notification.Position.BOTTOM_START);
     }

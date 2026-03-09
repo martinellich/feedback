@@ -37,7 +37,7 @@ class UC07ShareFormTest extends KaribuTest {
     @BeforeEach
     void createForm() {
         var form = formService.createFormFromTemplate("Share Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
-        formId = form.getId();
+        formId = form.id();
         login(OWNER_EMAIL, List.of("USER"));
     }
 
@@ -78,7 +78,7 @@ class UC07ShareFormTest extends KaribuTest {
 
         var shares = formService.getShares(formId);
         assertThat(shares).hasSize(1);
-        assertThat(shares.getFirst().getSharedWithEmail()).isEqualTo(SHARED_EMAIL);
+        assertThat(shares.getFirst().sharedWithEmail()).isEqualTo(SHARED_EMAIL);
     }
 
     @Test
@@ -108,7 +108,7 @@ class UC07ShareFormTest extends KaribuTest {
         Grid<FeedbackForm> grid = _get(Grid.class);
         var items = com.github.mvysny.kaributesting.v10.GridKt._findAll(grid);
         assertThat(items).hasSize(1);
-        assertThat(items.getFirst().getTitle()).isEqualTo("Share Test");
+        assertThat(items.getFirst().title()).isEqualTo("Share Test");
     }
 
     @Test

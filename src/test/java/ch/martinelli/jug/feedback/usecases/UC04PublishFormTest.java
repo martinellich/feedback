@@ -32,7 +32,7 @@ class UC04PublishFormTest extends KaribuTest {
     @BeforeEach
     void createDraftForm() {
         var form = formService.createFormFromTemplate("Publish Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
-        formId = form.getId();
+        formId = form.id();
         login(OWNER_EMAIL, List.of("USER"));
     }
 
@@ -70,7 +70,7 @@ class UC04PublishFormTest extends KaribuTest {
         _click(publishButton);
 
         var updatedForm = formService.getFormById(formId).orElseThrow();
-        assertThat(updatedForm.getStatus().name()).isEqualTo("PUBLIC");
+        assertThat(updatedForm.status().name()).isEqualTo("PUBLIC");
     }
 
     @Test

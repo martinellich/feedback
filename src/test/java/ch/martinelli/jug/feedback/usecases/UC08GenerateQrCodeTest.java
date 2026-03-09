@@ -37,8 +37,8 @@ class UC08GenerateQrCodeTest extends KaribuTest {
     @BeforeEach
     void createForm() {
         var form = formService.createFormFromTemplate("QR Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
-        formId = form.getId();
-        publicToken = form.getPublicToken();
+        formId = form.id();
+        publicToken = form.publicToken();
     }
 
     @SuppressWarnings("unchecked")

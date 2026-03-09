@@ -31,11 +31,8 @@ public class TokenService {
         tokenRepository.deleteByEmail(email);
 
         var code = String.format("%08d", random.nextInt(100_000_000));
-        var token = new AccessToken();
-        token.setEmail(email);
-        token.setToken(code);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(10));
-        tokenRepository.save(token);
+        tokenRepository.save(new AccessToken(null, email, code, false, LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(10)));
 
         var message = new SimpleMailMessage();
         message.setFrom("simon@martinelli.ch");
@@ -54,11 +51,10 @@ public class TokenService {
             return false;
         }
         var token = optToken.get();
-        if (token.getExpiresAt() != null && token.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (token.expiresAt() != null && token.expiresAt().isBefore(LocalDateTime.now())) {
             return false;
         }
-        token.setUsed(true);
-        tokenRepository.save(token);
+        tokenRepository.save(token.withUsed(true));
         return true;
     }
 }

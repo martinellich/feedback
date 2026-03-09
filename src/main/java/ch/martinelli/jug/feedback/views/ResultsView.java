@@ -47,14 +47,14 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
         var backButton = new Button(getTranslation("results.back"),
             e -> UI.getCurrent().navigate(DashboardView.class));
 
-        var title = new H2(getTranslation("results.title", form.getTitle()));
+        var title = new H2(getTranslation("results.title", form.title()));
         add(backButton, title);
 
-        if (form.getSpeakerName() != null && !form.getSpeakerName().isEmpty()) {
-            add(new Span(getTranslation("results.speaker", form.getSpeakerName())));
+        if (form.speakerName() != null && !form.speakerName().isEmpty()) {
+            add(new Span(getTranslation("results.speaker", form.speakerName())));
         }
 
-        var responseCount = formService.getResponseCount(form.getId());
+        var responseCount = formService.getResponseCount(form.id());
         add(new Paragraph(getTranslation("results.total-responses", responseCount)));
 
         if (responseCount == 0) {
@@ -62,13 +62,13 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
             return;
         }
 
-        for (var question : form.getQuestions()) {
-            add(new H3(question.getOrderIndex() + ". " + question.getQuestionText()));
+        for (var question : form.questions()) {
+            add(new H3(question.orderIndex() + ". " + question.questionText()));
 
-            if (question.getQuestionType() == QuestionType.RATING) {
-                addRatingResult(question.getId());
+            if (question.questionType() == QuestionType.RATING) {
+                addRatingResult(question.id());
             } else {
-                addTextResults(question.getId());
+                addTextResults(question.id());
             }
         }
     }
@@ -83,8 +83,8 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
     private void addTextResults(Long questionId) {
         var textAnswers = formService.getTextAnswers(questionId);
         for (var answer : textAnswers) {
-            if (answer.getTextValue() != null && !answer.getTextValue().trim().isEmpty()) {
-                var p = new Paragraph("\u2022 " + answer.getTextValue());
+            if (answer.textValue() != null && !answer.textValue().trim().isEmpty()) {
+                var p = new Paragraph("\u2022 " + answer.textValue());
                 p.getStyle().set("margin-left", "20px");
                 add(p);
             }

@@ -35,7 +35,7 @@ class UC06ViewResultsTest extends KaribuTest {
     @BeforeEach
     void createFormWithResponses() {
         var form = formService.createFormFromTemplate("Results Test", "Test Speaker", LocalDate.of(2026, 3, 15), "Zurich", OWNER_EMAIL);
-        formId = form.getId();
+        formId = form.id();
         formService.publishForm(formId);
     }
 
@@ -61,18 +61,17 @@ class UC06ViewResultsTest extends KaribuTest {
     @Test
     @UseCase(id = "UC-06", businessRules = "BR-012")
     void results_show_average_ratings() {
-        // Submit some feedback
         var form = formService.getFormById(formId).orElseThrow();
         var answers = new ArrayList<FeedbackAnswer>();
-        for (var question : form.getQuestions()) {
-            var answer = new FeedbackAnswer();
-            answer.setQuestion(question);
-            if (question.getQuestionType().name().equals("RATING")) {
-                answer.setRatingValue(4);
+        for (var question : form.questions()) {
+            Integer ratingValue = null;
+            String textValue = null;
+            if (question.questionType().name().equals("RATING")) {
+                ratingValue = 4;
             } else {
-                answer.setTextValue("Great talk!");
+                textValue = "Great talk!";
             }
-            answers.add(answer);
+            answers.add(new FeedbackAnswer(null, null, question.id(), ratingValue, textValue));
         }
         formService.submitResponse(formId, answers);
 
@@ -80,7 +79,6 @@ class UC06ViewResultsTest extends KaribuTest {
         UI.getCurrent().navigate(ResultsView.class, formId);
 
         assertThat(_get(Paragraph.class, spec -> spec.withText("Total responses: 1")).isVisible()).isTrue();
-        // Check average rating is displayed
         var avgParagraphs = _find(Paragraph.class, spec -> spec.withText("Average rating: 4.00 / 5"));
         assertThat(avgParagraphs).isNotEmpty();
     }
@@ -90,13 +88,12 @@ class UC06ViewResultsTest extends KaribuTest {
     void results_show_text_answers() {
         var form = formService.getFormById(formId).orElseThrow();
         var answers = new ArrayList<FeedbackAnswer>();
-        for (var question : form.getQuestions()) {
-            var answer = new FeedbackAnswer();
-            answer.setQuestion(question);
-            if (question.getQuestionType().name().equals("TEXT")) {
-                answer.setTextValue("Excellent content!");
+        for (var question : form.questions()) {
+            String textValue = null;
+            if (question.questionType().name().equals("TEXT")) {
+                textValue = "Excellent content!";
             }
-            answers.add(answer);
+            answers.add(new FeedbackAnswer(null, null, question.id(), null, textValue));
         }
         formService.submitResponse(formId, answers);
 
@@ -126,7 +123,6 @@ class UC06ViewResultsTest extends KaribuTest {
         login(OTHER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(ResultsView.class, formId);
 
-        // Should be redirected to dashboard
         assertThat(UI.getCurrent().getInternals().getActiveViewLocation().getPath()).isEmpty();
     }
 

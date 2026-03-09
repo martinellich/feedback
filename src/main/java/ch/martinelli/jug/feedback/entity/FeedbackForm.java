@@ -1,72 +1,37 @@
 package ch.martinelli.jug.feedback.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "feedback_form")
-public class FeedbackForm {
+public record FeedbackForm(Long id, String title, String speakerName, LocalDate eventDate, String location,
+                            FormStatus status, String publicToken, String ownerEmail, LocalDateTime createdAt,
+                            List<FeedbackQuestion> questions) {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public FeedbackForm(String title, String speakerName, LocalDate eventDate, String location, String ownerEmail) {
+        this(null, title, speakerName, eventDate, location, FormStatus.DRAFT,
+                UUID.randomUUID().toString(), ownerEmail, LocalDateTime.now(), new ArrayList<>());
+    }
 
-    @Column(nullable = false)
-    private String title;
+    public FeedbackForm withId(Long id) {
+        return new FeedbackForm(id, title, speakerName, eventDate, location, status, publicToken, ownerEmail,
+                createdAt, questions);
+    }
 
-    private String speakerName;
+    public FeedbackForm withStatus(FormStatus status) {
+        return new FeedbackForm(id, title, speakerName, eventDate, location, status, publicToken, ownerEmail,
+                createdAt, questions);
+    }
 
-    private LocalDate eventDate;
+    public FeedbackForm withQuestions(List<FeedbackQuestion> questions) {
+        return new FeedbackForm(id, title, speakerName, eventDate, location, status, publicToken, ownerEmail,
+                createdAt, questions);
+    }
 
-    private String location;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private FormStatus status = FormStatus.DRAFT;
-
-    @Column(unique = true, nullable = false)
-    private String publicToken = UUID.randomUUID().toString();
-
-    private String ownerEmail;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @OrderBy("orderIndex")
-    private List<FeedbackQuestion> questions = new ArrayList<>();
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getSpeakerName() { return speakerName; }
-    public void setSpeakerName(String speakerName) { this.speakerName = speakerName; }
-
-    public LocalDate getEventDate() { return eventDate; }
-    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public FormStatus getStatus() { return status; }
-    public void setStatus(FormStatus status) { this.status = status; }
-
-    public String getPublicToken() { return publicToken; }
-    public void setPublicToken(String publicToken) { this.publicToken = publicToken; }
-
-    public String getOwnerEmail() { return ownerEmail; }
-    public void setOwnerEmail(String ownerEmail) { this.ownerEmail = ownerEmail; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public List<FeedbackQuestion> getQuestions() { return questions; }
-    public void setQuestions(List<FeedbackQuestion> questions) { this.questions = questions; }
+    public FeedbackForm withDetails(String title, String speakerName, LocalDate eventDate, String location) {
+        return new FeedbackForm(id, title, speakerName, eventDate, location, status, publicToken, ownerEmail,
+                createdAt, questions);
+    }
 }

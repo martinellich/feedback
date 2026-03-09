@@ -70,12 +70,12 @@ class UC02CreateFormTest extends KaribuTest {
         // Verify form was created with correct data
         var forms = formService.getFormsForUser(OWNER_EMAIL);
         var createdForm = forms.stream()
-                .filter(f -> "Test Presentation".equals(f.getTitle()))
+                .filter(f -> "Test Presentation".equals(f.title()))
                 .findFirst()
                 .orElseThrow();
-        assertThat(createdForm.getStatus().name()).isEqualTo("DRAFT");
-        assertThat(createdForm.getSpeakerName()).isEqualTo("John Doe");
-        assertThat(createdForm.getQuestions()).hasSize(13);
+        assertThat(createdForm.status().name()).isEqualTo("DRAFT");
+        assertThat(createdForm.speakerName()).isEqualTo("John Doe");
+        assertThat(createdForm.questions()).hasSize(13);
     }
 
     @Test
@@ -99,16 +99,16 @@ class UC02CreateFormTest extends KaribuTest {
 
         var forms = formService.getFormsForUser(OWNER_EMAIL);
         var form = forms.stream()
-                .filter(f -> "Template Test".equals(f.getTitle()))
+                .filter(f -> "Template Test".equals(f.title()))
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(form.getQuestions()).hasSize(13);
-        var ratingCount = form.getQuestions().stream()
-                .filter(q -> q.getQuestionType().name().equals("RATING"))
+        assertThat(form.questions()).hasSize(13);
+        var ratingCount = form.questions().stream()
+                .filter(q -> q.questionType().name().equals("RATING"))
                 .count();
-        var textCount = form.getQuestions().stream()
-                .filter(q -> q.getQuestionType().name().equals("TEXT"))
+        var textCount = form.questions().stream()
+                .filter(q -> q.questionType().name().equals("TEXT"))
                 .count();
         assertThat(ratingCount).isEqualTo(9);
         assertThat(textCount).isEqualTo(4);

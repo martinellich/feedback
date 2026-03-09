@@ -36,7 +36,7 @@ class UC03EditFormTest extends KaribuTest {
     @BeforeEach
     void createTestForm() {
         var form = formService.createFormFromTemplate("Original Title", "Original Speaker", LocalDate.of(2026, 1, 1), "Original Location", OWNER_EMAIL);
-        formId = form.getId();
+        formId = form.id();
     }
 
     @Test
@@ -66,9 +66,9 @@ class UC03EditFormTest extends KaribuTest {
         expectNotifications("Form saved");
 
         var updatedForm = formService.getFormById(formId).orElseThrow();
-        assertThat(updatedForm.getTitle()).isEqualTo("Updated Title");
-        assertThat(updatedForm.getSpeakerName()).isEqualTo("Updated Speaker");
-        assertThat(updatedForm.getLocation()).isEqualTo("Updated Location");
+        assertThat(updatedForm.title()).isEqualTo("Updated Title");
+        assertThat(updatedForm.speakerName()).isEqualTo("Updated Speaker");
+        assertThat(updatedForm.location()).isEqualTo("Updated Location");
     }
 
     @Test

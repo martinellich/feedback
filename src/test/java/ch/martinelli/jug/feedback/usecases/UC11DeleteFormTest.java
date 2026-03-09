@@ -32,7 +32,7 @@ class UC11DeleteFormTest extends KaribuTest {
     @BeforeEach
     void createClosedForm() {
         var form = formService.createFormFromTemplate("Delete Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
-        formId = form.getId();
+        formId = form.id();
         formService.publishForm(formId);
         formService.closeForm(formId);
         login(OWNER_EMAIL, List.of("USER"));
@@ -43,7 +43,7 @@ class UC11DeleteFormTest extends KaribuTest {
         Grid<FeedbackForm> grid = _get(Grid.class);
         var items = _findAll(grid);
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).getId().equals(targetFormId)) {
+            if (items.get(i).id().equals(targetFormId)) {
                 return i;
             }
         }
@@ -104,17 +104,17 @@ class UC11DeleteFormTest extends KaribuTest {
 
         UI.getCurrent().navigate(DashboardView.class);
 
-        assertThat(findActionButtonForForm(draftForm.getId(), "Delete")).isNull();
+        assertThat(findActionButtonForForm(draftForm.id(), "Delete")).isNull();
     }
 
     @Test
     @UseCase(id = "UC-11", scenario = "Precondition", businessRules = "BR-021")
     void public_form_does_not_show_delete_button() {
         var publicForm = formService.createFormFromTemplate("Public Form", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
-        formService.publishForm(publicForm.getId());
+        formService.publishForm(publicForm.id());
 
         UI.getCurrent().navigate(DashboardView.class);
 
-        assertThat(findActionButtonForForm(publicForm.getId(), "Delete")).isNull();
+        assertThat(findActionButtonForForm(publicForm.id(), "Delete")).isNull();
     }
 }

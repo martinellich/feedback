@@ -35,8 +35,8 @@ class UC09CloseFormTest extends KaribuTest {
     @BeforeEach
     void createPublicForm() {
         var form = formService.createFormFromTemplate("Close Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
-        formId = form.getId();
-        publicToken = form.getPublicToken();
+        formId = form.id();
+        publicToken = form.publicToken();
         formService.publishForm(formId);
         login(OWNER_EMAIL, List.of("USER"));
     }
@@ -68,7 +68,7 @@ class UC09CloseFormTest extends KaribuTest {
         _click(findActionButton("Close"));
 
         var updatedForm = formService.getFormById(formId).orElseThrow();
-        assertThat(updatedForm.getStatus().name()).isEqualTo("CLOSED");
+        assertThat(updatedForm.status().name()).isEqualTo("CLOSED");
     }
 
     @Test

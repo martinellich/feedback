@@ -32,13 +32,7 @@ public class FormService {
     }
 
     public FeedbackForm createFormFromTemplate(String title, String speakerName, LocalDate eventDate, String location, String ownerEmail) {
-        var form = new FeedbackForm();
-        form.setTitle(title);
-        form.setSpeakerName(speakerName);
-        form.setEventDate(eventDate);
-        form.setLocation(location);
-        form.setOwnerEmail(ownerEmail);
-        form = formRepository.save(form);
+        var form = formRepository.save(new FeedbackForm(title, speakerName, eventDate, location, ownerEmail));
 
         var templateQuestions = List.of(
             new TemplateQuestion("Inhalt des Vortrags", QuestionType.RATING),
@@ -58,15 +52,10 @@ public class FormService {
 
         for (var i = 0; i < templateQuestions.size(); i++) {
             var tq = templateQuestions.get(i);
-            var question = new FeedbackQuestion();
-            question.setForm(form);
-            question.setQuestionText(tq.text());
-            question.setQuestionType(tq.type());
-            question.setOrderIndex(i + 1);
-            questionRepository.save(question);
+            questionRepository.save(new FeedbackQuestion(null, form.id(), tq.text(), tq.type(), i + 1));
         }
 
-        return formRepository.findById(form.getId()).orElseThrow();
+        return formRepository.findById(form.id()).orElseThrow();
     }
 
     @Transactional(readOnly = true)
@@ -87,7 +76,7 @@ public class FormService {
     @Transactional(readOnly = true)
     public boolean hasAccess(Long formId, String email) {
         return formRepository.findById(formId)
-                .map(form -> email.equals(form.getOwnerEmail())
+                .map(form -> email.equals(form.ownerEmail())
                         || formShareRepository.existsByFormIdAndSharedWithEmail(formId, email))
                 .orElse(false);
     }
@@ -95,7 +84,7 @@ public class FormService {
     @Transactional(readOnly = true)
     public boolean isOwner(Long formId, String email) {
         return formRepository.findById(formId)
-                .map(form -> email.equals(form.getOwnerEmail()))
+                .map(form -> email.equals(form.ownerEmail()))
                 .orElse(false);
     }
 
@@ -108,35 +97,25 @@ public class FormService {
     }
 
     public void publishForm(Long id) {
-        formRepository.findById(id).ifPresent(form -> {
-            form.setStatus(FormStatus.PUBLIC);
-            formRepository.save(form);
-        });
+        formRepository.findById(id).ifPresent(form ->
+                formRepository.save(form.withStatus(FormStatus.PUBLIC)));
     }
 
     public void closeForm(Long id) {
-        formRepository.findById(id).ifPresent(form -> {
-            form.setStatus(FormStatus.CLOSED);
-            formRepository.save(form);
-        });
+        formRepository.findById(id).ifPresent(form ->
+                formRepository.save(form.withStatus(FormStatus.CLOSED)));
     }
 
     public void reopenForm(Long id) {
-        formRepository.findById(id).ifPresent(form -> {
-            form.setStatus(FormStatus.PUBLIC);
-            formRepository.save(form);
-        });
+        formRepository.findById(id).ifPresent(form ->
+                formRepository.save(form.withStatus(FormStatus.PUBLIC)));
     }
 
     public void shareForm(Long formId, String email) {
         if (formShareRepository.existsByFormIdAndSharedWithEmail(formId, email)) {
             return;
         }
-        var form = formRepository.findById(formId).orElseThrow();
-        var share = new FormShare();
-        share.setForm(form);
-        share.setSharedWithEmail(email);
-        formShareRepository.save(share);
+        formShareRepository.save(new FormShare(null, formId, email));
     }
 
     public void unshareForm(Long formId, String email) {
@@ -149,14 +128,10 @@ public class FormService {
     }
 
     public FeedbackResponse submitResponse(Long formId, List<FeedbackAnswer> answers) {
-        var form = formRepository.findById(formId).orElseThrow();
-        var response = new FeedbackResponse();
-        response.setForm(form);
-        response = responseRepository.save(response);
+        var response = responseRepository.save(new FeedbackResponse(formId));
 
         for (FeedbackAnswer answer : answers) {
-            answer.setResponse(response);
-            answerRepository.save(answer);
+            answerRepository.save(answer.withResponseId(response.id()));
         }
 
         return response;

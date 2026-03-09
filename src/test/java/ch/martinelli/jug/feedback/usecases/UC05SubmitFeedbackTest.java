@@ -32,9 +32,9 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     @BeforeEach
     void createPublicForm() {
         var form = formService.createFormFromTemplate("Feedback Test", "Test Speaker", LocalDate.of(2026, 3, 15), "Zurich", OWNER_EMAIL);
-        formId = form.getId();
-        publicToken = form.getPublicToken();
-        formService.publishForm(form.getId());
+        formId = form.id();
+        publicToken = form.publicToken();
+        formService.publishForm(form.id());
     }
 
     @Test
@@ -103,7 +103,7 @@ class UC05SubmitFeedbackTest extends KaribuTest {
         // Create a draft form (not published)
         var draftForm = formService.createFormFromTemplate("Draft Form", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
 
-        UI.getCurrent().navigate(PublicFormView.class, draftForm.getPublicToken());
+        UI.getCurrent().navigate(PublicFormView.class, draftForm.publicToken());
 
         assertThat(_get(H2.class, spec -> spec.withText("Form not available")).isVisible()).isTrue();
     }

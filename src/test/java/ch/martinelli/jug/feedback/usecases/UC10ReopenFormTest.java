@@ -35,8 +35,8 @@ class UC10ReopenFormTest extends KaribuTest {
     @BeforeEach
     void createClosedForm() {
         var form = formService.createFormFromTemplate("Reopen Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
-        formId = form.getId();
-        publicToken = form.getPublicToken();
+        formId = form.id();
+        publicToken = form.publicToken();
         formService.publishForm(formId);
         formService.closeForm(formId);
         login(OWNER_EMAIL, List.of("USER"));
@@ -69,7 +69,7 @@ class UC10ReopenFormTest extends KaribuTest {
         _click(findActionButton("Reopen"));
 
         var updatedForm = formService.getFormById(formId).orElseThrow();
-        assertThat(updatedForm.getStatus().name()).isEqualTo("PUBLIC");
+        assertThat(updatedForm.status().name()).isEqualTo("PUBLIC");
     }
 
     @Test

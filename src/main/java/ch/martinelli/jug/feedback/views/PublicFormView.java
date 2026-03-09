@@ -56,7 +56,7 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
 
         var form = optForm.get();
 
-        if (form.getStatus() != FormStatus.PUBLIC) {
+        if (form.status() != FormStatus.PUBLIC) {
             add(new H2(getTranslation("form.not-available")),
                     new Paragraph(getTranslation("form.not-available.message")));
             return;
@@ -67,38 +67,38 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
     }
 
     private void buildForm(FeedbackForm form) {
-        var title = new H2(form.getTitle());
+        var title = new H2(form.title());
         add(title);
 
-        if (form.getSpeakerName() != null && !form.getSpeakerName().isEmpty()) {
-            add(new Paragraph(getTranslation("form.speaker", form.getSpeakerName())));
+        if (form.speakerName() != null && !form.speakerName().isEmpty()) {
+            add(new Paragraph(getTranslation("form.speaker", form.speakerName())));
         }
-        if (form.getEventDate() != null) {
-            add(new Paragraph(getTranslation("form.date", form.getEventDate().toString())));
+        if (form.eventDate() != null) {
+            add(new Paragraph(getTranslation("form.date", form.eventDate().toString())));
         }
-        if (form.getLocation() != null && !form.getLocation().isEmpty()) {
-            add(new Paragraph(getTranslation("form.location", form.getLocation())));
+        if (form.location() != null && !form.location().isEmpty()) {
+            add(new Paragraph(getTranslation("form.location", form.location())));
         }
 
         add(new Paragraph(getTranslation("form.rating.instructions")));
 
-        for (var question : form.getQuestions()) {
-            add(new H3(question.getOrderIndex() + ". " + question.getQuestionText()));
+        for (var question : form.questions()) {
+            add(new H3(question.orderIndex() + ". " + question.questionText()));
 
-            if (question.getQuestionType() == QuestionType.RATING) {
+            if (question.questionType() == QuestionType.RATING) {
                 var ratingGroup = new RadioButtonGroup<Integer>();
                 ratingGroup.addClassName("rating-group");
                 ratingGroup.setItems(1, 2, 3, 4, 5);
                 ratingGroup.setItemLabelGenerator(i -> getTranslation("form.rating." + i));
                 add(ratingGroup);
-                ratingGroups.put(question.getId(), ratingGroup);
+                ratingGroups.put(question.id(), ratingGroup);
             } else {
                 var textArea = new TextArea();
                 textArea.setPlaceholder(getTranslation("form.text.placeholder"));
                 textArea.setWidthFull();
                 textArea.setMinHeight("100px");
                 add(textArea);
-                textAreas.put(question.getId(), textArea);
+                textAreas.put(question.id(), textArea);
             }
         }
 
@@ -111,26 +111,26 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
     private void submitFeedback() {
         var answers = new ArrayList<FeedbackAnswer>();
 
-        for (var question : currentForm.getQuestions()) {
-            var answer = new FeedbackAnswer();
-            answer.setQuestion(question);
+        for (var question : currentForm.questions()) {
+            Integer ratingValue = null;
+            String textValue = null;
 
-            if (question.getQuestionType() == QuestionType.RATING) {
-                var group = ratingGroups.get(question.getId());
+            if (question.questionType() == QuestionType.RATING) {
+                var group = ratingGroups.get(question.id());
                 if (group != null && group.getValue() != null) {
-                    answer.setRatingValue(group.getValue());
+                    ratingValue = group.getValue();
                 }
             } else {
-                var textArea = textAreas.get(question.getId());
+                var textArea = textAreas.get(question.id());
                 if (textArea != null && !textArea.getValue().trim().isEmpty()) {
-                    answer.setTextValue(textArea.getValue().trim());
+                    textValue = textArea.getValue().trim();
                 }
             }
 
-            answers.add(answer);
+            answers.add(new FeedbackAnswer(null, null, question.id(), ratingValue, textValue));
         }
 
-        formService.submitResponse(currentForm.getId(), answers);
+        formService.submitResponse(currentForm.id(), answers);
 
         removeAll();
         add(new H2(getTranslation("form.thank-you")),
