@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.entity.FeedbackForm;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.DashboardView;
@@ -52,6 +53,7 @@ class UC08GenerateQrCodeTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-08", businessRules = {"BR-018", "BR-019"})
     void qr_code_button_opens_dialog_with_image_and_url() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(DashboardView.class);
@@ -75,6 +77,7 @@ class UC08GenerateQrCodeTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-08", businessRules = "BR-020")
     void qr_code_available_for_draft_form() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(DashboardView.class);
@@ -87,6 +90,7 @@ class UC08GenerateQrCodeTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-08")
     void qr_code_available_for_shared_user() {
         formService.shareForm(formId, SHARED_EMAIL);
 

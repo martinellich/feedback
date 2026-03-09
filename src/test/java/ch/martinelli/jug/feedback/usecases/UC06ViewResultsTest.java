@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.entity.FeedbackAnswer;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.ResultsView;
@@ -39,6 +40,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-06", businessRules = "BR-011")
     void owner_can_view_results() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(ResultsView.class, formId);
@@ -47,6 +49,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-06", scenario = "A2")
     void no_responses_shows_message() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(ResultsView.class, formId);
@@ -56,6 +59,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-06", businessRules = "BR-012")
     void results_show_average_ratings() {
         // Submit some feedback
         var form = formService.getFormById(formId).orElseThrow();
@@ -82,6 +86,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-06", businessRules = "BR-013")
     void results_show_text_answers() {
         var form = formService.getFormById(formId).orElseThrow();
         var answers = new ArrayList<FeedbackAnswer>();
@@ -105,6 +110,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-06")
     void shared_user_can_view_results() {
         formService.shareForm(formId, SHARED_EMAIL);
 
@@ -115,6 +121,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-06", scenario = "A1")
     void non_authorized_user_is_redirected() {
         login(OTHER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(ResultsView.class, formId);
@@ -124,6 +131,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-06")
     void back_button_navigates_to_dashboard() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(ResultsView.class, formId);

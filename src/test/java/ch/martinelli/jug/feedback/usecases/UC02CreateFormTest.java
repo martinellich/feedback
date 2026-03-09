@@ -1,7 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
-
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.DashboardView;
 import com.vaadin.flow.component.UI;
@@ -36,6 +36,7 @@ class UC02CreateFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-02")
     void create_new_form_button_opens_dialog() {
         _click(_get(Button.class, spec -> spec.withText("Create New Form")));
 
@@ -48,6 +49,7 @@ class UC02CreateFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-02", businessRules = "BR-006")
     void create_form_with_title_creates_draft_form() {
         _click(_get(Button.class, spec -> spec.withText("Create New Form")));
 
@@ -77,6 +79,7 @@ class UC02CreateFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-02", scenario = "A1")
     void create_form_without_title_shows_validation_error() {
         _click(_get(Button.class, spec -> spec.withText("Create New Form")));
 
@@ -90,6 +93,7 @@ class UC02CreateFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-02", businessRules = "BR-005")
     void created_form_has_13_template_questions() {
         formService.createFormFromTemplate("Template Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
 
@@ -111,6 +115,7 @@ class UC02CreateFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-02", scenario = "A1")
     void cancel_dialog_does_not_create_form() {
         long countBefore = formService.getFormsForUser(OWNER_EMAIL).size();
 

@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.entity.FeedbackForm;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.DashboardView;
@@ -50,6 +51,7 @@ class UC04PublishFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-04")
     void draft_form_shows_publish_button() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -59,6 +61,7 @@ class UC04PublishFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-04")
     void publish_changes_status_to_public() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -71,6 +74,7 @@ class UC04PublishFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-04", scenario = "Postcondition")
     void published_form_shows_close_button_instead_of_publish() {
         UI.getCurrent().navigate(DashboardView.class);
 

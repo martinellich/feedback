@@ -1,7 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
-
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.PublicFormView;
 import com.vaadin.flow.component.UI;
@@ -38,6 +38,7 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-05", businessRules = "BR-007")
     void public_form_displays_title_and_questions() {
         UI.getCurrent().navigate(PublicFormView.class, publicToken);
 
@@ -53,6 +54,7 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-05", businessRules = {"BR-007", "BR-008", "BR-009"})
     void submit_feedback_shows_thank_you_page() {
         UI.getCurrent().navigate(PublicFormView.class, publicToken);
 
@@ -78,6 +80,7 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-05", scenario = "A1")
     void form_not_found_shows_error() {
         UI.getCurrent().navigate(PublicFormView.class, "nonexistent-token");
 
@@ -85,6 +88,7 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-05", scenario = "A2")
     void closed_form_shows_not_available() {
         formService.closeForm(formId);
 
@@ -94,6 +98,7 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-05", scenario = "A2")
     void draft_form_shows_not_available() {
         // Create a draft form (not published)
         var draftForm = formService.createFormFromTemplate("Draft Form", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
@@ -104,6 +109,7 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-05", businessRules = "BR-009")
     void multiple_submissions_create_separate_responses() {
         // First submission
         UI.getCurrent().navigate(PublicFormView.class, publicToken);

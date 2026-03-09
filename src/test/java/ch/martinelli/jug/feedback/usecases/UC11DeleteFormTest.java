@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.entity.FeedbackForm;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.DashboardView;
@@ -63,6 +64,7 @@ class UC11DeleteFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-11", businessRules = "BR-021")
     void closed_form_shows_delete_button() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -70,6 +72,7 @@ class UC11DeleteFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-11", businessRules = "BR-022")
     void delete_removes_form() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -83,6 +86,7 @@ class UC11DeleteFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-11", businessRules = "BR-023")
     void delete_also_removes_shares() {
         formService.shareForm(formId, "shared@example.com");
         assertThat(formService.getShares(formId)).hasSize(1);
@@ -94,6 +98,7 @@ class UC11DeleteFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-11", scenario = "Precondition", businessRules = "BR-021")
     void draft_form_does_not_show_delete_button() {
         var draftForm = formService.createFormFromTemplate("Draft Form", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
 
@@ -103,6 +108,7 @@ class UC11DeleteFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-11", scenario = "Precondition", businessRules = "BR-021")
     void public_form_does_not_show_delete_button() {
         var publicForm = formService.createFormFromTemplate("Public Form", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
         formService.publishForm(publicForm.getId());

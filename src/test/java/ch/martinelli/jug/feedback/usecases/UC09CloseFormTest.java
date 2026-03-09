@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.entity.FeedbackForm;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.DashboardView;
@@ -52,6 +53,7 @@ class UC09CloseFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-09")
     void public_form_shows_close_button() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -59,6 +61,7 @@ class UC09CloseFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-09")
     void close_changes_status_to_closed() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -69,6 +72,7 @@ class UC09CloseFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-09", scenario = "Postcondition")
     void closed_form_shows_reopen_and_delete_buttons() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -81,6 +85,7 @@ class UC09CloseFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-09", scenario = "Postcondition")
     void closed_form_rejects_feedback() {
         formService.closeForm(formId);
 

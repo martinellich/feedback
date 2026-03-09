@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.views.LoginView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UC01LoginTest extends KaribuTest {
 
     @Test
+    @UseCase(id = "UC-01")
     void login_view_displays_email_field_and_send_code_button() {
         UI.getCurrent().navigate(LoginView.class);
 
@@ -29,6 +31,7 @@ class UC01LoginTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-01", scenario = "A1")
     void send_code_with_empty_email_shows_error() {
         UI.getCurrent().navigate(LoginView.class);
 
@@ -38,6 +41,7 @@ class UC01LoginTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-01", businessRules = {"BR-001", "BR-002"})
     void send_code_with_valid_email_shows_code_field() {
         UI.getCurrent().navigate(LoginView.class);
 
@@ -55,6 +59,7 @@ class UC01LoginTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-01", scenario = "A1")
     void login_with_empty_code_shows_error() {
         UI.getCurrent().navigate(LoginView.class);
 
@@ -67,6 +72,7 @@ class UC01LoginTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-01", scenario = "A1", businessRules = "BR-001")
     void login_with_invalid_code_shows_error() {
         UI.getCurrent().navigate(LoginView.class);
 
@@ -80,6 +86,7 @@ class UC01LoginTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-01", scenario = "Postcondition")
     void authenticated_user_is_redirected_to_dashboard() {
         login("test@example.com", List.of("USER"));
 

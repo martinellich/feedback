@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.entity.FeedbackForm;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.DashboardView;
@@ -52,6 +53,7 @@ class UC07ShareFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-07", businessRules = "BR-014")
     void share_button_opens_dialog() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -63,6 +65,7 @@ class UC07ShareFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-07", businessRules = "BR-016")
     void share_with_valid_email() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -79,6 +82,7 @@ class UC07ShareFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-07", scenario = "A2")
     void share_with_self_shows_error() {
         UI.getCurrent().navigate(DashboardView.class);
 
@@ -91,6 +95,7 @@ class UC07ShareFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-07", scenario = "Postcondition")
     void shared_form_appears_in_other_users_dashboard() {
         formService.shareForm(formId, SHARED_EMAIL);
 
@@ -107,6 +112,7 @@ class UC07ShareFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-07", scenario = "A3", businessRules = "BR-017")
     void duplicate_share_is_prevented() {
         formService.shareForm(formId, SHARED_EMAIL);
 
@@ -118,6 +124,7 @@ class UC07ShareFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-07", scenario = "A4")
     void remove_share() {
         formService.shareForm(formId, SHARED_EMAIL);
         assertThat(formService.getShares(formId)).hasSize(1);

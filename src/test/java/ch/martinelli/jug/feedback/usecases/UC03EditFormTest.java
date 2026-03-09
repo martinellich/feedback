@@ -1,6 +1,7 @@
 package ch.martinelli.jug.feedback.usecases;
 
 import ch.martinelli.jug.feedback.KaribuTest;
+import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.entity.QuestionType;
 import ch.martinelli.jug.feedback.service.FormService;
 import ch.martinelli.jug.feedback.views.FormEditorView;
@@ -39,6 +40,7 @@ class UC03EditFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-03")
     void owner_can_open_form_editor() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(FormEditorView.class, formId);
@@ -49,6 +51,7 @@ class UC03EditFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-03")
     void owner_can_save_form_details() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(FormEditorView.class, formId);
@@ -69,6 +72,7 @@ class UC03EditFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-03")
     void editor_shows_question_grid_with_template_questions() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(FormEditorView.class, formId);
@@ -79,6 +83,7 @@ class UC03EditFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-03", scenario = "A2")
     @SuppressWarnings("unchecked")
     void owner_can_add_new_question() {
         login(OWNER_EMAIL, List.of("USER"));
@@ -93,6 +98,7 @@ class UC03EditFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-03", scenario = "A1")
     void non_owner_is_redirected_to_dashboard() {
         login(OTHER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(FormEditorView.class, formId);
@@ -102,6 +108,7 @@ class UC03EditFormTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-03")
     void back_button_navigates_to_dashboard() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(FormEditorView.class, formId);
