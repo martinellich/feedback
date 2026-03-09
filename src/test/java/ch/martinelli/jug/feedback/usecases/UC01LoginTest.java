@@ -3,19 +3,29 @@ package ch.martinelli.jug.feedback.usecases;
 import ch.martinelli.jug.feedback.KaribuTest;
 import ch.martinelli.jug.feedback.UseCase;
 import ch.martinelli.jug.feedback.views.LoginView;
+import com.github.mvysny.fakeservlet.FakeRequest;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.server.VaadinServletRequest;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 
+import static ch.martinelli.jug.feedback.jooq.Tables.ACCESS_TOKEN;
 import static com.github.mvysny.kaributesting.v10.LocatorJ.*;
 import static com.github.mvysny.kaributesting.v10.NotificationsKt.expectNotifications;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UC01LoginTest extends KaribuTest {
+
+    @Autowired
+    private DSLContext dsl;
 
     @Test
     @UseCase(id = "UC-01")
@@ -83,6 +93,42 @@ class UC01LoginTest extends KaribuTest {
         _click(_get(Button.class, spec -> spec.withText("Login")));
 
         expectNotifications("Login code sent! Check your inbox.", "Invalid or expired code");
+    }
+
+    @Test
+    @UseCase(id = "UC-01", businessRules = {"BR-001", "BR-002"})
+    void successful_login_marks_token_as_used() {
+        UI.getCurrent().navigate(LoginView.class);
+
+        _setValue(_get(EmailField.class, spec -> spec.withLabel("Email")), "uc01-login-flow@example.com");
+        _click(_get(Button.class, spec -> spec.withText("Send Login Code")));
+
+        // Read the generated code from DB
+        var code = dsl.select(ACCESS_TOKEN.TOKEN)
+                .from(ACCESS_TOKEN)
+                .where(ACCESS_TOKEN.EMAIL.eq("uc01-login-flow@example.com"))
+                .fetchOne(ACCESS_TOKEN.TOKEN);
+
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Login Code")), code);
+
+        // Pre-configure FakeRequest principal so ViewAccessChecker allows navigation to DashboardView
+        var auth = UsernamePasswordAuthenticationToken.authenticated(
+                "uc01-login-flow@example.com", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        var request = (FakeRequest) VaadinServletRequest.getCurrent().getRequest();
+        request.setUserPrincipalInt(auth);
+        request.setUserInRole((_, role) -> List.of("USER").contains(role));
+
+        _click(_get(Button.class, spec -> spec.withText("Login")));
+
+        // Assert redirected to dashboard
+        assertThat(UI.getCurrent().getInternals().getActiveViewLocation().getPath()).isEmpty();
+
+        // Assert token is marked as used (update branch was executed)
+        var used = dsl.select(ACCESS_TOKEN.USED)
+                .from(ACCESS_TOKEN)
+                .where(ACCESS_TOKEN.EMAIL.eq("uc01-login-flow@example.com"))
+                .fetchOne(ACCESS_TOKEN.USED);
+        assertThat(used).isTrue();
     }
 
     @Test
