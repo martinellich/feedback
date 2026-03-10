@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>ch.martinelli.jug</groupId>
-    <artifactId>jug-feedback</artifactId>
+    <groupId>ch.martinelli.oss</groupId>
+    <artifactId>feedback</artifactId>
     <version>0.1.3-SNAPSHOT</version>
-    <name>jug-feedback</name>
-    <description>JUG Feedback Application</description>
+    <name>feedback</name>
+    <description>Feedback Application</description>
 
     <properties>
         <java.version>25</java.version>
@@ -28,9 +28,9 @@
         <jacoco.version>0.8.14</jacoco.version>
         <sonar.organization>martinellich</sonar.organization>
         <sonar.exclusions>
-            src/main/java/ch/martinelli/jug/feedback/Application.java,
+            src/main/java/ch/martinelli/feedback/Application.java,
             src/main/frontend/generated/**,
-            src/main/java/ch/martinelli/jug/feedback/jooq/**/*.java
+            src/main/java/ch/martinelli/feedback/jooq/**/*.java
         </sonar.exclusions>
     </properties>
 
@@ -200,12 +200,12 @@
                             </properties>
                             <forcedTypes>
                                 <forcedType>
-                                    <userType>ch.martinelli.jug.feedback.entity.FormStatus</userType>
+                                    <userType>ch.martinelli.feedback.form.domain.FormStatus</userType>
                                     <enumConverter>true</enumConverter>
                                     <includeExpression>feedback_form\.status</includeExpression>
                                 </forcedType>
                                 <forcedType>
-                                    <userType>ch.martinelli.jug.feedback.entity.QuestionType</userType>
+                                    <userType>ch.martinelli.feedback.form.domain.QuestionType</userType>
                                     <enumConverter>true</enumConverter>
                                     <includeExpression>feedback_question\.question_type</includeExpression>
                                 </forcedType>
@@ -216,7 +216,7 @@
                             <daos>false</daos>
                         </generate>
                         <target>
-                            <packageName>ch.martinelli.jug.feedback.jooq</packageName>
+                            <packageName>ch.martinelli.feedback.db</packageName>
                         </target>
                     </generator>
                 </configuration>
