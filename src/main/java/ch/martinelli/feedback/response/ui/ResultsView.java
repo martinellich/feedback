@@ -109,6 +109,7 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
         var chartContainer = new Div();
         chartContainer.addClassName("rating-distribution");
         chartContainer.getStyle()
+                .set("width", "100%")
                 .set("max-width", "500px")
                 .set("margin", "8px 0 12px 0");
 
@@ -123,20 +124,25 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
                     .set("display", "flex")
                     .set("align-items", "center")
                     .set("gap", "8px")
-                    .set("margin-bottom", "4px");
+                    .set("margin-bottom", "4px")
+                    .set("width", "100%");
 
             var label = new Span(String.valueOf(rating));
             label.getStyle()
                     .set("min-width", "16px")
                     .set("text-align", "right")
-                    .set("font-weight", "bold");
+                    .set("font-weight", "bold")
+                    .set("flex-shrink", "0");
 
             var barBackground = new Div();
             barBackground.getStyle()
-                    .set("flex", "1")
+                    .set("flex-grow", "1")
+                    .set("flex-shrink", "1")
+                    .set("flex-basis", "0%")
                     .set("background-color", "var(--lumo-contrast-10pct)")
                     .set("border-radius", "4px")
                     .set("height", "20px")
+                    .set("position", "relative")
                     .set("overflow", "hidden");
 
             var bar = new Div();
@@ -152,7 +158,8 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
             var countLabel = new Span(String.format("%d (%.0f%%)", count, percentage));
             countLabel.getStyle()
                     .set("min-width", "80px")
-                    .set("font-size", "var(--lumo-font-size-s)");
+                    .set("font-size", "var(--lumo-font-size-s)")
+                    .set("flex-shrink", "0");
 
             row.add(label, barBackground, countLabel);
             chartContainer.add(row);
