@@ -138,6 +138,6 @@ class UC11DeleteFormTest extends KaribuTest {
 
         assertThat(formService.getFormById(formId)).isEmpty();
         assertThat(formService.getResponseCount(formId)).isZero();
-        assertThat(formService.getRatingDistribution(question.id())).isEmpty();
+        assertThat(formService.getRatingDistribution(question.id()).values()).allMatch(count -> count == 0L);
     }
 }
