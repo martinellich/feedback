@@ -46,9 +46,24 @@ public class FormTemplateRepository {
     }
 
     @Transactional
+    public void deleteById(Long id) {
+        dsl.deleteFrom(FORM_TEMPLATE)
+                .where(FORM_TEMPLATE.ID.eq(id))
+                .execute();
+    }
+
+    @Transactional
     public void deleteByOwnerEmail(String email) {
         dsl.deleteFrom(FORM_TEMPLATE)
                 .where(FORM_TEMPLATE.OWNER_EMAIL.eq(email))
+                .execute();
+    }
+
+    @Transactional
+    public void updateName(Long id, String name) {
+        dsl.update(FORM_TEMPLATE)
+                .set(FORM_TEMPLATE.NAME, name)
+                .where(FORM_TEMPLATE.ID.eq(id))
                 .execute();
     }
 

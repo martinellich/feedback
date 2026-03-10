@@ -6,7 +6,7 @@
 **Use Case Name:** Manage Templates
 **Primary Actor:** Template Owner
 **Goal:** View, rename, and delete owned templates
-**Status:** Planned
+**Status:** Implemented
 
 ## Preconditions
 

@@ -27,7 +27,7 @@
 | [UC-11](UC-11_delete_form.md)      | Delete Form           | Form Owner                   | Implemented |
 | [UC-12](UC-12_save_form_as_template.md) | Save Form as Template | Form Owner              | Implemented |
 | [UC-13](UC-13_create_form_from_template.md) | Create Form from Template | User               | Implemented |
-| [UC-14](UC-14_manage_templates.md) | Manage Templates      | Template Owner               | Planned     |
+| [UC-14](UC-14_manage_templates.md) | Manage Templates      | Template Owner               | Implemented |
 
 ## Status Transitions
 

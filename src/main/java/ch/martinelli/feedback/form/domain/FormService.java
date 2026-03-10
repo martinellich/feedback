@@ -136,6 +136,16 @@ public class FormService {
     }
 
     @Transactional
+    public void renameTemplate(Long id, String name) {
+        formTemplateRepository.updateName(id, name);
+    }
+
+    @Transactional
+    public void deleteTemplate(Long id) {
+        formTemplateRepository.deleteById(id);
+    }
+
+    @Transactional
     public FeedbackForm createFormFromTemplate(FormTemplate template, String title, String speakerName,
                                                 LocalDate eventDate, String location, String ownerEmail) {
         var form = formRepository.save(new FeedbackForm(title, speakerName, eventDate, location, ownerEmail));
