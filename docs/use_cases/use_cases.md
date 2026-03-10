@@ -1,0 +1,40 @@
+# Use Cases - Feedback
+
+## Actors
+
+| Actor                    | Description                                              |
+|--------------------------|----------------------------------------------------------|
+| User (authenticated)     | Logged-in user with ROLE_USER                            |
+| Form Owner               | User who created a form                                  |
+| Template Owner           | User who created a template                              |
+| Shared User              | User who has been granted access to a form               |
+| Anonymous User           | Unauthenticated user with form link/QR code              |
+
+## Use Case Overview
+
+| ID                                 | Use Case              | Actor                        | Status      |
+|------------------------------------|-----------------------|------------------------------|-------------|
+| [UC-01](UC-01_login.md)            | Login                 | Anonymous User               | Implemented |
+| [UC-02](UC-02_create_form.md)      | Create Feedback Form  | User                         | Implemented |
+| [UC-03](UC-03_edit_form.md)        | Edit Form             | Form Owner                   | Implemented |
+| [UC-04](UC-04_publish_form.md)     | Publish Form          | Form Owner                   | Implemented |
+| [UC-05](UC-05_submit_feedback.md)  | Submit Feedback       | Anonymous User               | Implemented |
+| [UC-06](UC-06_view_results.md)     | View Results          | Form Owner, Shared User      | Implemented |
+| [UC-07](UC-07_share_form.md)       | Share Form            | Form Owner                   | Implemented |
+| [UC-08](UC-08_generate_qr_code.md) | Generate QR Code      | Form Owner, Shared User      | Implemented |
+| [UC-09](UC-09_close_form.md)       | Close Form            | Form Owner                   | Implemented |
+| [UC-10](UC-10_reopen_form.md)      | Reopen Form           | Form Owner                   | Implemented |
+| [UC-11](UC-11_delete_form.md)      | Delete Form           | Form Owner                   | Implemented |
+| [UC-12](UC-12_save_form_as_template.md) | Save Form as Template | Form Owner              | Implemented |
+| [UC-13](UC-13_create_form_from_template.md) | Create Form from Template | User               | Implemented |
+| [UC-14](UC-14_manage_templates.md) | Manage Templates      | Template Owner               | Implemented |
+| [UC-15](UC-15_export_results_pdf.md) | Export Results as PDF | Form Owner, Shared User      | Implemented |
+| [UC-16](UC-16_unpublish_form.md) | Unpublish Form | Form Owner                   | Planned |
+
+## Status Transitions
+
+```
+DRAFT ←--[Unpublish]-- PUBLIC --[Close]--> CLOSED
+  |                      ^                    |
+  +----[Publish]-------->+<---[Reopen]--------+
+```
