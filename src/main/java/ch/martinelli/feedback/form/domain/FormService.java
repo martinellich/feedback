@@ -81,6 +81,16 @@ public class FormService {
     }
 
     @Transactional
+    public void unpublishForm(Long id) {
+        formRepository.findById(id).ifPresent(form -> {
+            if (responseRepository.countByFormId(id) > 0) {
+                throw new IllegalStateException("Cannot unpublish form with existing responses");
+            }
+            formRepository.save(form.withStatus(FormStatus.DRAFT));
+        });
+    }
+
+    @Transactional
     public void closeForm(Long id) {
         formRepository.findById(id).ifPresent(form ->
                 formRepository.save(form.withStatus(FormStatus.CLOSED)));

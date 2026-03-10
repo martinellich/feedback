@@ -131,6 +131,16 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
                 refreshGrid();
             });
             closeButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
+
+            if (formService.getResponseCount(form.id()) == 0) {
+                var unpublishButton = new Button(getTranslation("dashboard.action.unpublish"), e -> {
+                    formService.unpublishForm(form.id());
+                    refreshGrid();
+                });
+                unpublishButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+                buttons.add(unpublishButton);
+            }
+
             buttons.add(closeButton, qrButton, resultsButton, shareButton, templateButton);
         } else {
             var reopenButton = new Button(getTranslation("dashboard.action.reopen"), e -> {

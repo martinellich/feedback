@@ -6,7 +6,7 @@
 **Use Case Name:** Unpublish Form
 **Primary Actor:** Form Owner
 **Goal:** Move a published form back to draft status so it can be edited, as long as no feedback has been submitted
-**Status:** Planned
+**Status:** Implemented
 
 ## Preconditions
 
