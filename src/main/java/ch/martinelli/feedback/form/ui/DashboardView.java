@@ -35,7 +35,7 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
 
     private final transient FormService formService;
     private final transient QrCodeService qrCodeService;
-    private Grid<FeedbackForm> grid;
+    private final Grid<FeedbackForm> grid;
 
     public DashboardView(FormService formService, QrCodeService qrCodeService) {
         this.formService = formService;

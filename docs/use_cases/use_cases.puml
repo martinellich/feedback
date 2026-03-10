@@ -7,7 +7,7 @@ actor "Anonymer\nBenutzer" as anon
 actor "Formular-\nBesitzer" as owner
 actor "Geteilter\nBenutzer" as shared
 
-rectangle "JUG Feedback" {
+rectangle "Feedback" {
     usecase "UC-01\nAnmelden" as UC01
     usecase "UC-02\nFormular erstellen" as UC02
     usecase "UC-03\nFormular bearbeiten" as UC03

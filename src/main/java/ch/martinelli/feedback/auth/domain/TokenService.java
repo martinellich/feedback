@@ -35,7 +35,7 @@ public class TokenService {
         var message = new SimpleMailMessage();
         message.setFrom("simon@martinelli.ch");
         message.setTo(email);
-        message.setSubject("JUG Feedback - Your Login Code");
+        message.setSubject("Feedback - Your Login Code");
         message.setText("Your login code is: " + code + "\n\nThis code expires in 10 minutes.");
         mailSender.send(message);
 

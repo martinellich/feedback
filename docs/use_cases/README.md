@@ -1,4 +1,4 @@
-# Use Cases - JUG Feedback
+# Use Cases - Feedback
 
 ## Akteure
 

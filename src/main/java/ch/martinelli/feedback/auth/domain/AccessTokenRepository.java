@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import static ch.martinelli.feedback.db.tables.AccessToken.ACCESS_TOKEN;
 
-
 @Repository
 public class AccessTokenRepository {
 

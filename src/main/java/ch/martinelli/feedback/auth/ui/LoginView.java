@@ -41,7 +41,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
     private final TextField codeField = new TextField();
     private final Button sendCodeButton;
     private final Button loginButton;
-    private ShortcutRegistration sendCodeShortcut;
+    private final ShortcutRegistration sendCodeShortcut;
 
     private String currentEmail;
 
