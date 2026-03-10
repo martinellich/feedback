@@ -139,6 +139,15 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Ha
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             event.forwardTo(DashboardView.class);
+            return;
         }
+
+        emailField.setReadOnly(false);
+        emailField.clear();
+        sendCodeButton.setVisible(true);
+        codeField.setVisible(false);
+        codeField.clear();
+        loginButton.setVisible(false);
+        currentEmail = null;
     }
 }
