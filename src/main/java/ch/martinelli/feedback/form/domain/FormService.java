@@ -131,6 +131,22 @@ public class FormService {
         return answerRepository.findByQuestionIdAndTextValueIsNotNull(questionId);
     }
 
+    public List<FormTemplate> getTemplatesForUser(String email) {
+        return formTemplateRepository.findByOwnerEmailWithQuestions(email);
+    }
+
+    @Transactional
+    public FeedbackForm createFormFromTemplate(FormTemplate template, String title, String speakerName,
+                                                LocalDate eventDate, String location, String ownerEmail) {
+        var form = formRepository.save(new FeedbackForm(title, speakerName, eventDate, location, ownerEmail));
+
+        var questions = template.questions().stream()
+                .map(tq -> new FeedbackQuestion(null, form.id(), tq.questionText(), tq.questionType(), tq.orderIndex()))
+                .toList();
+
+        return formRepository.save(form.withQuestions(questions));
+    }
+
     @Transactional
     public FormTemplate saveFormAsTemplate(Long formId, String templateName) {
         var form = formRepository.findById(formId)

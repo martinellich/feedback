@@ -3,11 +3,13 @@ package ch.martinelli.feedback.form.ui;
 import ch.martinelli.feedback.form.domain.FeedbackForm;
 import ch.martinelli.feedback.form.domain.FormService;
 import ch.martinelli.feedback.form.domain.FormStatus;
+import ch.martinelli.feedback.form.domain.FormTemplate;
 import ch.martinelli.feedback.form.domain.QrCodeService;
 import ch.martinelli.feedback.response.ui.ResultsView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -48,7 +50,9 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         var createButton = new Button(getTranslation("dashboard.create-new"), e -> showCreateDialog());
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        var header = new HorizontalLayout(title, createButton);
+        var createFromTemplateButton = new Button(getTranslation("dashboard.create-from-template"), e -> showCreateFromTemplateDialog());
+
+        var header = new HorizontalLayout(title, createButton, createFromTemplateButton);
         header.setAlignItems(Alignment.BASELINE);
         header.setWidthFull();
         header.setJustifyContentMode(JustifyContentMode.BETWEEN);
@@ -285,6 +289,68 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         dialog.getFooter().add(footer);
         dialog.open();
         nameField.focus();
+    }
+
+    private void showCreateFromTemplateDialog() {
+        var dialog = new Dialog();
+        dialog.setHeaderTitle(getTranslation("dashboard.from-template.title"));
+
+        var templates = formService.getTemplatesForUser(getCurrentUserEmail());
+
+        var templateSelector = new ComboBox<FormTemplate>(getTranslation("dashboard.from-template.template"));
+        templateSelector.setItems(templates);
+        templateSelector.setItemLabelGenerator(FormTemplate::name);
+        templateSelector.setWidthFull();
+        templateSelector.setRequired(true);
+
+        var titleField = new TextField(getTranslation("dashboard.create.form-title"));
+        titleField.setWidthFull();
+        titleField.setRequired(true);
+
+        var speakerField = new TextField(getTranslation("dashboard.create.speaker"));
+        speakerField.setWidthFull();
+
+        var dateField = new DatePicker(getTranslation("dashboard.create.date"));
+        dateField.setWidthFull();
+
+        var locationField = new TextField(getTranslation("dashboard.create.location"));
+        locationField.setWidthFull();
+
+        var createButton = new Button(getTranslation("dashboard.create.button"), e -> {
+            if (templateSelector.getValue() == null) {
+                templateSelector.setInvalid(true);
+                templateSelector.setErrorMessage(getTranslation("dashboard.from-template.error.template-required"));
+                return;
+            }
+            if (titleField.getValue().trim().isEmpty()) {
+                titleField.setInvalid(true);
+                return;
+            }
+            formService.createFormFromTemplate(
+                    templateSelector.getValue(),
+                    titleField.getValue().trim(),
+                    speakerField.getValue().trim(),
+                    dateField.getValue(),
+                    locationField.getValue().trim(),
+                    getCurrentUserEmail()
+            );
+            dialog.close();
+            refreshGrid();
+            Notification.show(getTranslation("dashboard.create.success"), 3000, Notification.Position.BOTTOM_START);
+        });
+        createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        var cancelButton = new Button(getTranslation("dashboard.create.cancel"), e -> dialog.close());
+
+        var content = new VerticalLayout(templateSelector, titleField, speakerField, dateField, locationField);
+        content.setPadding(false);
+
+        var footer = new HorizontalLayout(createButton, cancelButton);
+
+        dialog.add(content);
+        dialog.getFooter().add(footer);
+        dialog.open();
+        templateSelector.focus();
     }
 
     private void showCreateDialog() {

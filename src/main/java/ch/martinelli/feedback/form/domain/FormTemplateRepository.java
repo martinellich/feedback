@@ -60,4 +60,25 @@ public class FormTemplateRepository {
                 .fetch(Records.mapping((id, name, ownerEmail, createdAt) ->
                         new FormTemplate(id, name, ownerEmail, createdAt, new ArrayList<>())));
     }
+
+    public List<FormTemplate> findByOwnerEmailWithQuestions(String email) {
+        var templates = findByOwnerEmail(email);
+        if (templates.isEmpty()) {
+            return templates;
+        }
+
+        var templateIds = templates.stream().map(FormTemplate::id).toList();
+        var questionsByTemplateId = dsl.select(TEMPLATE_QUESTION.ID, TEMPLATE_QUESTION.TEMPLATE_ID,
+                        TEMPLATE_QUESTION.QUESTION_TEXT, TEMPLATE_QUESTION.QUESTION_TYPE, TEMPLATE_QUESTION.ORDER_INDEX)
+                .from(TEMPLATE_QUESTION)
+                .where(TEMPLATE_QUESTION.TEMPLATE_ID.in(templateIds))
+                .orderBy(TEMPLATE_QUESTION.ORDER_INDEX)
+                .fetch(Records.mapping(TemplateQuestion::new))
+                .stream()
+                .collect(java.util.stream.Collectors.groupingBy(TemplateQuestion::templateId));
+
+        return templates.stream()
+                .map(t -> t.withQuestions(questionsByTemplateId.getOrDefault(t.id(), List.of())))
+                .toList();
+    }
 }
