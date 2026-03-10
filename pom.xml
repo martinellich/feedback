@@ -209,7 +209,7 @@
                                 <forcedType>
                                     <userType>ch.martinelli.feedback.form.domain.QuestionType</userType>
                                     <enumConverter>true</enumConverter>
-                                    <includeExpression>feedback_question\.question_type</includeExpression>
+                                    <includeExpression>feedback_question\.question_type|template_question\.question_type</includeExpression>
                                 </forcedType>
                             </forcedTypes>
                         </database>

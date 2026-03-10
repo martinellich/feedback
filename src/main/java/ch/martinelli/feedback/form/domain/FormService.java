@@ -19,15 +19,18 @@ public class FormService {
     private final FeedbackResponseRepository responseRepository;
     private final FeedbackAnswerRepository answerRepository;
     private final FormShareRepository formShareRepository;
+    private final FormTemplateRepository formTemplateRepository;
 
     public FormService(FeedbackFormRepository formRepository,
                        FeedbackResponseRepository responseRepository,
                        FeedbackAnswerRepository answerRepository,
-                       FormShareRepository formShareRepository) {
+                       FormShareRepository formShareRepository,
+                       FormTemplateRepository formTemplateRepository) {
         this.formRepository = formRepository;
         this.responseRepository = responseRepository;
         this.answerRepository = answerRepository;
         this.formShareRepository = formShareRepository;
+        this.formTemplateRepository = formTemplateRepository;
     }
 
     @Transactional
@@ -126,6 +129,19 @@ public class FormService {
 
     public List<FeedbackAnswer> getTextAnswers(Long questionId) {
         return answerRepository.findByQuestionIdAndTextValueIsNotNull(questionId);
+    }
+
+    @Transactional
+    public FormTemplate saveFormAsTemplate(Long formId, String templateName) {
+        var form = formRepository.findById(formId)
+                .orElseThrow(() -> new IllegalArgumentException("Form not found: " + formId));
+
+        var templateQuestions = form.questions().stream()
+                .map(q -> new TemplateQuestion(null, null, q.questionText(), q.questionType(), q.orderIndex()))
+                .toList();
+
+        var template = new FormTemplate(templateName, form.ownerEmail()).withQuestions(templateQuestions);
+        return formTemplateRepository.save(template);
     }
 
 }

@@ -107,6 +107,9 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         var shareButton = new Button(getTranslation("dashboard.action.share"), e -> showShareDialog(form));
         shareButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
+        var templateButton = new Button(getTranslation("dashboard.action.save-template"), e -> showSaveAsTemplateDialog(form));
+        templateButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+
         if (form.status() == FormStatus.DRAFT) {
             var editButton = new Button(getTranslation("dashboard.action.edit"), e -> UI.getCurrent().navigate(FormEditorView.class, form.id()));
             editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
@@ -116,14 +119,14 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
                 refreshGrid();
             });
             publishButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_SUCCESS);
-            buttons.add(editButton, publishButton, qrButton, resultsButton, shareButton);
+            buttons.add(editButton, publishButton, qrButton, resultsButton, shareButton, templateButton);
         } else if (form.status() == FormStatus.PUBLIC) {
             var closeButton = new Button(getTranslation("dashboard.action.close"), e -> {
                 formService.closeForm(form.id());
                 refreshGrid();
             });
             closeButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
-            buttons.add(closeButton, qrButton, resultsButton, shareButton);
+            buttons.add(closeButton, qrButton, resultsButton, shareButton, templateButton);
         } else {
             var reopenButton = new Button(getTranslation("dashboard.action.reopen"), e -> {
                 formService.reopenForm(form.id());
@@ -136,7 +139,7 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
                 refreshGrid();
             });
             deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
-            buttons.add(reopenButton, qrButton, resultsButton, shareButton, deleteButton);
+            buttons.add(reopenButton, qrButton, resultsButton, shareButton, templateButton, deleteButton);
         }
 
         return buttons;
@@ -248,6 +251,40 @@ public class DashboardView extends VerticalLayout implements HasDynamicTitle {
         dialog.add(dialogContent);
         dialog.setCloseOnOutsideClick(true);
         dialog.open();
+    }
+
+    private void showSaveAsTemplateDialog(FeedbackForm form) {
+        var dialog = new Dialog();
+        dialog.setHeaderTitle(getTranslation("dashboard.template.title"));
+
+        var nameField = new TextField(getTranslation("dashboard.template.name"));
+        nameField.setWidthFull();
+        nameField.setRequired(true);
+        nameField.setValue(form.title());
+
+        var saveButton = new Button(getTranslation("dashboard.template.save"), e -> {
+            if (nameField.getValue().trim().isEmpty()) {
+                nameField.setInvalid(true);
+                nameField.setErrorMessage(getTranslation("dashboard.template.error.name-required"));
+                return;
+            }
+            formService.saveFormAsTemplate(form.id(), nameField.getValue().trim());
+            dialog.close();
+            Notification.show(getTranslation("dashboard.template.success"), 3000, Notification.Position.BOTTOM_START);
+        });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        var cancelButton = new Button(getTranslation("dashboard.create.cancel"), e -> dialog.close());
+
+        var content = new VerticalLayout(nameField);
+        content.setPadding(false);
+
+        var footer = new HorizontalLayout(saveButton, cancelButton);
+
+        dialog.add(content);
+        dialog.getFooter().add(footer);
+        dialog.open();
+        nameField.focus();
     }
 
     private void showCreateDialog() {

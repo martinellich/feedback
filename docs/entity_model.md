@@ -9,6 +9,7 @@ erDiagram
     FEEDBACK_FORM ||--o{ FORM_SHARE : "shared via"
     FEEDBACK_RESPONSE ||--o{ FEEDBACK_ANSWER : "contains"
     FEEDBACK_QUESTION ||--o{ FEEDBACK_ANSWER : "answered by"
+    FORM_TEMPLATE ||--o{ TEMPLATE_QUESTION : "contains"
 ```
 
 ### FEEDBACK_FORM
@@ -72,6 +73,29 @@ A sharing record granting another user access to a feedback form.
 | sharedWithEmail | Email of the user granted access     | String    | 255              | Not Null, Format: Email             |
 
 **Constraints:** Unique combination of (form_id, sharedWithEmail).
+
+### FORM_TEMPLATE
+
+A reusable template for feedback forms, storing a set of questions that can be copied into new forms.
+
+| Attribute  | Description                             | Data Type | Length/Precision | Validation Rules          |
+|------------|-----------------------------------------|-----------|------------------|---------------------------|
+| id         | Unique identifier                       | Long      | 19               | Primary Key, Sequence     |
+| name       | Name of the template                    | String    | 255              | Not Null                  |
+| ownerEmail | Email of the template creator           | String    | 255              | Not Null                  |
+| createdAt  | Timestamp when the template was created | DateTime  | -                | Not Null                  |
+
+### TEMPLATE_QUESTION
+
+A question belonging to a template, copied into forms created from the template.
+
+| Attribute    | Description                          | Data Type | Length/Precision | Validation Rules                        |
+|--------------|--------------------------------------|-----------|------------------|-----------------------------------------|
+| id           | Unique identifier                    | Long      | 19               | Primary Key, Sequence                   |
+| template_id  | Reference to the form template       | Long      | 19               | Not Null, Foreign Key (FORM_TEMPLATE.id, CASCADE DELETE) |
+| questionText | Text of the question                 | String    | 500              | Not Null                                |
+| questionType | Type of question                     | String    | 10               | Not Null, Values: RATING, TEXT          |
+| orderIndex   | Display order of the question        | Integer   | 10               | Not Null                                |
 
 ### ACCESS_TOKEN
 
