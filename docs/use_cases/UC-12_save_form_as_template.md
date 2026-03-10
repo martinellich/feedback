@@ -6,7 +6,7 @@
 **Use Case Name:** Save Form as Template
 **Primary Actor:** Form Owner
 **Goal:** Save a form's question structure as a reusable template
-**Status:** Planned
+**Status:** Implemented
 
 ## Preconditions
 

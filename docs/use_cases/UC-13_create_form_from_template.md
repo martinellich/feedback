@@ -6,7 +6,7 @@
 **Use Case Name:** Create Form from Template
 **Primary Actor:** User
 **Goal:** Create a new feedback form pre-populated with questions from a template
-**Status:** Planned
+**Status:** Implemented
 
 ## Preconditions
 
