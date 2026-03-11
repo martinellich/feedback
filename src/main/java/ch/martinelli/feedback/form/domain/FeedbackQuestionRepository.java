@@ -1,11 +1,8 @@
 package ch.martinelli.feedback.form.domain;
 
 import org.jooq.DSLContext;
-import org.jooq.Records;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static ch.martinelli.feedback.db.tables.FeedbackQuestion.FEEDBACK_QUESTION;
 
@@ -41,11 +38,4 @@ public class FeedbackQuestionRepository {
         }
     }
 
-    public List<FeedbackQuestion> findByFormIdOrderByOrderIndex(Long formId) {
-        return dsl.select(FEEDBACK_QUESTION.ID, FEEDBACK_QUESTION.FORM_ID, FEEDBACK_QUESTION.QUESTION_TEXT, FEEDBACK_QUESTION.QUESTION_TYPE, FEEDBACK_QUESTION.ORDER_INDEX)
-                .from(FEEDBACK_QUESTION)
-                .where(FEEDBACK_QUESTION.FORM_ID.eq(formId))
-                .orderBy(FEEDBACK_QUESTION.ORDER_INDEX)
-                .fetch(Records.mapping(FeedbackQuestion::new));
-    }
 }
