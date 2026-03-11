@@ -44,13 +44,6 @@ public class FormShareRepository {
                 .fetch(Records.mapping(FormShare::new));
     }
 
-    public List<FormShare> findBySharedWithEmail(String email) {
-        return dsl.select(FORM_SHARE.ID, FORM_SHARE.FORM_ID, FORM_SHARE.SHARED_WITH_EMAIL)
-                .from(FORM_SHARE)
-                .where(FORM_SHARE.SHARED_WITH_EMAIL.eq(email))
-                .fetch(Records.mapping(FormShare::new));
-    }
-
     @Transactional
     public void deleteByFormIdAndSharedWithEmail(Long formId, String email) {
         dsl.deleteFrom(FORM_SHARE)

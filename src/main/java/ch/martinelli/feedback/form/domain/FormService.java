@@ -124,7 +124,7 @@ public class FormService {
         var response = responseRepository.insert(new FeedbackResponse(null, formId, LocalDateTime.now()));
 
         for (FeedbackAnswer answer : answers) {
-            answerRepository.save(answer.withResponseId(response.id()));
+            answerRepository.insert(answer.withResponseId(response.id()));
         }
 
         return response;
