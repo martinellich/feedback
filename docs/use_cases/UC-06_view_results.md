@@ -55,7 +55,7 @@
 
 ## Business Rules
 
-### BR-011: Status-Independent Results
+### BR-036: Status-Independent Results
 
 Results can be viewed regardless of form status
 
@@ -63,10 +63,10 @@ Results can be viewed regardless of form status
 
 Average calculation only includes non-null ratings
 
-### BR-013: Empty Text Answers
+### BR-037: Empty Text Answers Not Displayed
 
 Empty text answers are not displayed
 
-### BR-014: Rating Distribution Chart
+### BR-038: Rating Distribution Chart
 
 For each rating question, the system displays a horizontal bar chart with one bar per rating value (1–5), ordered from 5 (highest) to 1 (lowest). Each bar shows the count and percentage of responses. Bar width is proportional to the count relative to the maximum count across all rating values for that question. The chart is rendered using pure CSS/HTML (no external charting library).

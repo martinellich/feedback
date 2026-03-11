@@ -9,9 +9,11 @@ import ch.martinelli.feedback.form.domain.FormService;
 import ch.martinelli.feedback.form.domain.QuestionType;
 import ch.martinelli.feedback.form.ui.DashboardView;
 import ch.martinelli.feedback.response.domain.FeedbackAnswer;
+import ch.martinelli.feedback.response.ui.PublicFormView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +23,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.github.mvysny.kaributesting.v10.GridKt._getCellComponent;
-import static com.github.mvysny.kaributesting.v10.LocatorJ.*;
+import static com.github.mvysny.kaributesting.v10.LocatorJ._click;
+import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UC16UnpublishFormTest extends KaribuTest {
@@ -35,11 +38,13 @@ class UC16UnpublishFormTest extends KaribuTest {
     private FeedbackQuestionRepository questionRepository;
 
     private Long formId;
+    private String publicToken;
 
     @BeforeEach
     void createPublicForm() {
         var form = formService.createForm("Unpublish Test", "Speaker", LocalDate.now(), "Location", OWNER_EMAIL);
         formId = form.id();
+        publicToken = form.publicToken();
         questionRepository.save(new FeedbackQuestion(null, formId, "Rating", QuestionType.RATING, 1));
         formService.publishForm(formId);
         login(OWNER_EMAIL, List.of("USER"));
@@ -89,7 +94,7 @@ class UC16UnpublishFormTest extends KaribuTest {
     }
 
     @Test
-    @UseCase(id = "UC-16", scenario = "A1")
+    @UseCase(id = "UC-16", scenario = "A1", businessRules = "BR-035")
     void public_form_with_responses_hides_unpublish_button() {
         // Submit a response to the form
         var form = formService.getFormById(formId).orElseThrow();
@@ -101,5 +106,18 @@ class UC16UnpublishFormTest extends KaribuTest {
 
         assertThat(findActionButton("Unpublish")).isNull();
         assertThat(findActionButton("Close")).isNotNull();
+    }
+
+    @Test
+    @UseCase(id = "UC-16", scenario = "Postcondition")
+    void unpublished_form_is_not_accessible_via_public_link() {
+        // Unpublish the form
+        formService.unpublishForm(formId);
+
+        // Try to access via public link (anonymous)
+        logout();
+        UI.getCurrent().navigate(PublicFormView.class, publicToken);
+
+        assertThat(_get(H2.class, spec -> spec.withText("Form not available")).isVisible()).isTrue();
     }
 }

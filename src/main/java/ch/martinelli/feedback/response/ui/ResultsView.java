@@ -20,6 +20,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.DownloadResponse;
 import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +31,7 @@ import java.util.Map;
 @PermitAll
 public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>, HasDynamicTitle {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ResultsView.class);
     private static final String WIDTH = "width";
     private static final String FLEX_SHRINK = "flex-shrink";
 
@@ -66,9 +69,16 @@ public class ResultsView extends VerticalLayout implements HasUrlParameter<Long>
         String fileName = form.title().replaceAll("[^a-zA-Z0-9\\-]", "_") + "_results.pdf";
         var exportPdfLink = new Anchor(
                 DownloadHandler.fromInputStream(_ -> {
-                    byte[] pdfBytes = pdfExportService.generateResultsPdf(form, formService);
-                    return new DownloadResponse(new ByteArrayInputStream(pdfBytes), fileName,
-                            "application/pdf", pdfBytes.length);
+                    try {
+                        byte[] pdfBytes = pdfExportService.generateResultsPdf(form, formService);
+                        return new DownloadResponse(new ByteArrayInputStream(pdfBytes), fileName,
+                                "application/pdf", pdfBytes.length);
+                    } catch (Exception e) {
+                        LOG.error("Failed to generate PDF for form '{}'", form.title(), e);
+                        byte[] errorBytes = "PDF generation failed".getBytes();
+                        return new DownloadResponse(new ByteArrayInputStream(errorBytes), "error.txt",
+                                "text/plain", errorBytes.length);
+                    }
                 }),
                 getTranslation("results.export-pdf"));
         exportPdfLink.getElement().getStyle().set("display", "inline-flex");

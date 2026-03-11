@@ -111,6 +111,17 @@ class UC15ExportResultsPdfTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-15", businessRules = "BR-034")
+    void non_authorized_user_cannot_access_results() {
+        var otherEmail = "uc15-other@example.com";
+        login(otherEmail, List.of("USER"));
+        UI.getCurrent().navigate(ResultsView.class, formId);
+
+        // Should be redirected to dashboard
+        assertThat(UI.getCurrent().getInternals().getActiveViewLocation().getPath()).isEmpty();
+    }
+
+    @Test
     @UseCase(id = "UC-15", businessRules = "BR-032")
     void pdf_file_name_replaces_special_characters() {
         var form = formService.createForm("My Form! @#$", "Speaker", LocalDate.now(), "Loc", OWNER_EMAIL);

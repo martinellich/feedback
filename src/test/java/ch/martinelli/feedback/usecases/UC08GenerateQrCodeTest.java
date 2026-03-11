@@ -9,8 +9,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,6 +87,37 @@ class UC08GenerateQrCodeTest extends KaribuTest {
 
         var dialog = _get(Dialog.class);
         assertThat(dialog.isOpened()).isTrue();
+    }
+
+    @Test
+    @UseCase(id = "UC-08", businessRules = "BR-020")
+    void qr_code_available_for_public_form() {
+        formService.publishForm(formId);
+
+        login(OWNER_EMAIL, List.of("USER"));
+        UI.getCurrent().navigate(DashboardView.class);
+
+        _click(findActionButton("QR Code"));
+
+        var dialog = _get(Dialog.class);
+        assertThat(dialog.isOpened()).isTrue();
+        assertThat(_get(Image.class).isVisible()).isTrue();
+    }
+
+    @Test
+    @UseCase(id = "UC-08", businessRules = "BR-020")
+    void qr_code_available_for_closed_form() {
+        formService.publishForm(formId);
+        formService.closeForm(formId);
+
+        login(OWNER_EMAIL, List.of("USER"));
+        UI.getCurrent().navigate(DashboardView.class);
+
+        _click(findActionButton("QR Code"));
+
+        var dialog = _get(Dialog.class);
+        assertThat(dialog.isOpened()).isTrue();
+        assertThat(_get(Image.class).isVisible()).isTrue();
     }
 
     @Test
