@@ -5,6 +5,7 @@ import ch.martinelli.feedback.form.domain.FormService;
 import ch.martinelli.feedback.form.domain.FormStatus;
 import ch.martinelli.feedback.form.domain.QuestionType;
 import ch.martinelli.feedback.response.domain.FeedbackAnswer;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
@@ -17,6 +18,7 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ import java.util.Map;
 @Route("form")
 @AnonymousAllowed
 public class PublicFormView extends VerticalLayout implements HasUrlParameter<String>, HasDynamicTitle {
+
+    private static final String COOKIE_PREFIX = "feedback_submitted_";
 
     private final transient FormService formService;
     private final Map<Long, RadioButtonGroup<Integer>> ratingGroups = new HashMap<>();
@@ -59,6 +63,12 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
         if (form.status() != FormStatus.PUBLIC) {
             add(new H2(getTranslation("form.not-available")),
                     new Paragraph(getTranslation("form.not-available.message")));
+            return;
+        }
+
+        if (hasSubmittedCookie(form.id())) {
+            add(new H2(getTranslation("form.already-submitted")),
+                    new Paragraph(getTranslation("form.already-submitted.message")));
             return;
         }
 
@@ -131,9 +141,38 @@ public class PublicFormView extends VerticalLayout implements HasUrlParameter<St
         }
 
         formService.submitResponse(currentForm.id(), answers);
+        setSubmittedCookie(currentForm.id());
 
         removeAll();
         add(new H2(getTranslation("form.thank-you")),
                 new Paragraph(getTranslation("form.thank-you.message")));
+    }
+
+    private boolean hasSubmittedCookie(Long formId) {
+        var request = VaadinRequest.getCurrent();
+        if (request == null) {
+            return false;
+        }
+        var cookies = request.getCookies();
+        if (cookies == null) {
+            return false;
+        }
+        var cookieName = COOKIE_PREFIX + formId;
+        for (var cookie : cookies) {
+            if (cookieName.equals(cookie.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void setSubmittedCookie(Long formId) {
+        var ui = UI.getCurrent();
+        if (ui != null) {
+            var cookieName = COOKIE_PREFIX + formId;
+            ui.getPage().executeJs(
+                    "document.cookie = $0 + '=true; path=/; max-age=' + (365 * 24 * 60 * 60) + '; SameSite=Lax'",
+                    cookieName);
+        }
     }
 }
