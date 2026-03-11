@@ -35,7 +35,7 @@ A question belonging to a feedback form, either a rating or free-text question.
 | Attribute    | Description                          | Data Type | Length/Precision | Validation Rules                    |
 |--------------|--------------------------------------|-----------|------------------|-------------------------------------|
 | id           | Unique identifier                    | Long      | 19               | Primary Key, Sequence               |
-| form_id      | Reference to the feedback form       | Long      | 19               | Not Null, Foreign Key (FEEDBACK_FORM.id) |
+| form_id      | Reference to the feedback form       | Long      | 19               | Not Null, Foreign Key (FEEDBACK_FORM.id, CASCADE DELETE) |
 | questionText | Text of the question                 | String    | 500              | Not Null                            |
 | questionType | Type of question                     | String    | 10               | Not Null, Values: RATING, TEXT      |
 | orderIndex   | Display order of the question        | Integer   | 10               | Not Null                            |
@@ -47,7 +47,7 @@ A submitted feedback response from an anonymous user for a specific form.
 | Attribute   | Description                             | Data Type | Length/Precision | Validation Rules                    |
 |-------------|-----------------------------------------|-----------|------------------|-------------------------------------|
 | id          | Unique identifier                       | Long      | 19               | Primary Key, Sequence               |
-| form_id     | Reference to the feedback form          | Long      | 19               | Not Null, Foreign Key (FEEDBACK_FORM.id) |
+| form_id     | Reference to the feedback form          | Long      | 19               | Not Null, Foreign Key (FEEDBACK_FORM.id, CASCADE DELETE) |
 | submittedAt | Timestamp when the response was submitted | DateTime  | -                | Not Null                            |
 
 ### FEEDBACK_ANSWER
@@ -57,8 +57,8 @@ An individual answer to a question within a feedback response.
 | Attribute   | Description                          | Data Type | Length/Precision | Validation Rules                          |
 |-------------|--------------------------------------|-----------|------------------|-------------------------------------------|
 | id          | Unique identifier                    | Long      | 19               | Primary Key, Sequence                     |
-| response_id | Reference to the feedback response   | Long      | 19               | Not Null, Foreign Key (FEEDBACK_RESPONSE.id) |
-| question_id | Reference to the feedback question   | Long      | 19               | Not Null, Foreign Key (FEEDBACK_QUESTION.id) |
+| response_id | Reference to the feedback response   | Long      | 19               | Not Null, Foreign Key (FEEDBACK_RESPONSE.id, CASCADE DELETE) |
+| question_id | Reference to the feedback question   | Long      | 19               | Not Null, Foreign Key (FEEDBACK_QUESTION.id, CASCADE DELETE) |
 | ratingValue | Numeric rating value                 | Integer   | 10               | Optional, Min: 1, Max: 5                 |
 | textValue   | Free-text answer                     | String    | 2000             | Optional                                  |
 
