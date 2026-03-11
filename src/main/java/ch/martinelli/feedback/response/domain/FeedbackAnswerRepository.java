@@ -22,26 +22,15 @@ public class FeedbackAnswerRepository {
     }
 
     @Transactional
-    public FeedbackAnswer save(FeedbackAnswer answer) {
-        if (answer.id() == null) {
-            var id = dsl.insertInto(FEEDBACK_ANSWER)
-                    .set(FEEDBACK_ANSWER.RESPONSE_ID, answer.responseId())
-                    .set(FEEDBACK_ANSWER.QUESTION_ID, answer.questionId())
-                    .set(FEEDBACK_ANSWER.RATING_VALUE, answer.ratingValue())
-                    .set(FEEDBACK_ANSWER.TEXT_VALUE, answer.textValue())
-                    .returning(FEEDBACK_ANSWER.ID)
-                    .fetchOne(FEEDBACK_ANSWER.ID);
-            return answer.withId(id);
-        } else {
-            dsl.update(FEEDBACK_ANSWER)
-                    .set(FEEDBACK_ANSWER.RESPONSE_ID, answer.responseId())
-                    .set(FEEDBACK_ANSWER.QUESTION_ID, answer.questionId())
-                    .set(FEEDBACK_ANSWER.RATING_VALUE, answer.ratingValue())
-                    .set(FEEDBACK_ANSWER.TEXT_VALUE, answer.textValue())
-                    .where(FEEDBACK_ANSWER.ID.eq(answer.id()))
-                    .execute();
-            return answer;
-        }
+    public FeedbackAnswer insert(FeedbackAnswer answer) {
+        var id = dsl.insertInto(FEEDBACK_ANSWER)
+                .set(FEEDBACK_ANSWER.RESPONSE_ID, answer.responseId())
+                .set(FEEDBACK_ANSWER.QUESTION_ID, answer.questionId())
+                .set(FEEDBACK_ANSWER.RATING_VALUE, answer.ratingValue())
+                .set(FEEDBACK_ANSWER.TEXT_VALUE, answer.textValue())
+                .returning(FEEDBACK_ANSWER.ID)
+                .fetchOne(FEEDBACK_ANSWER.ID);
+        return answer.withId(id);
     }
 
     public Double findAverageRatingByQuestionId(Long questionId) {

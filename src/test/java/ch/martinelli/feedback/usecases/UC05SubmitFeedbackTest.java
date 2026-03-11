@@ -2,14 +2,19 @@ package ch.martinelli.feedback.usecases;
 
 import ch.martinelli.feedback.KaribuTest;
 import ch.martinelli.feedback.UseCase;
-import ch.martinelli.feedback.form.domain.*;
+import ch.martinelli.feedback.form.domain.FeedbackQuestion;
+import ch.martinelli.feedback.form.domain.FeedbackQuestionRepository;
+import ch.martinelli.feedback.form.domain.FormService;
+import ch.martinelli.feedback.form.domain.QuestionType;
 import ch.martinelli.feedback.response.ui.PublicFormView;
+import com.github.mvysny.fakeservlet.FakeRequest;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
-
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.server.VaadinServletRequest;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,16 +123,14 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
-    @UseCase(id = "UC-05", businessRules = "BR-009")
-    void multiple_submissions_create_separate_responses() {
-        // First submission
-        UI.getCurrent().navigate(PublicFormView.class, publicToken);
-        _click(_get(Button.class, spec -> spec.withText("Submit Feedback")));
+    @UseCase(id = "UC-05", scenario = "A3", businessRules = "BR-011")
+    void already_submitted_shows_message_when_cookie_present() {
+        // Simulate a previously submitted cookie on the request
+        var fakeRequest = (FakeRequest) VaadinServletRequest.getCurrent().getRequest();
+        fakeRequest.addCookie(new Cookie("feedback_submitted_" + formId, "true"));
 
-        // Second submission
         UI.getCurrent().navigate(PublicFormView.class, publicToken);
-        _click(_get(Button.class, spec -> spec.withText("Submit Feedback")));
 
-        assertThat(formService.getResponseCount(formId)).isEqualTo(2);
+        assertThat(_get(H2.class, spec -> spec.withText("Already submitted")).isVisible()).isTrue();
     }
 }

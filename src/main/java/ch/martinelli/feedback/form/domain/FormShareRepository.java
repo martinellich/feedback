@@ -19,35 +19,19 @@ public class FormShareRepository {
     }
 
     @Transactional
-    public FormShare save(FormShare share) {
-        if (share.id() == null) {
-            var id = dsl.insertInto(FORM_SHARE)
-                    .set(FORM_SHARE.FORM_ID, share.formId())
-                    .set(FORM_SHARE.SHARED_WITH_EMAIL, share.sharedWithEmail())
-                    .returning(FORM_SHARE.ID)
-                    .fetchOne(FORM_SHARE.ID);
-            return share.withId(id);
-        } else {
-            dsl.update(FORM_SHARE)
-                    .set(FORM_SHARE.FORM_ID, share.formId())
-                    .set(FORM_SHARE.SHARED_WITH_EMAIL, share.sharedWithEmail())
-                    .where(FORM_SHARE.ID.eq(share.id()))
-                    .execute();
-            return share;
-        }
+    public FormShare insert(FormShare share) {
+        var id = dsl.insertInto(FORM_SHARE)
+                .set(FORM_SHARE.FORM_ID, share.formId())
+                .set(FORM_SHARE.SHARED_WITH_EMAIL, share.sharedWithEmail())
+                .returning(FORM_SHARE.ID)
+                .fetchOne(FORM_SHARE.ID);
+        return share.withId(id);
     }
 
     public List<FormShare> findByFormId(Long formId) {
         return dsl.select(FORM_SHARE.ID, FORM_SHARE.FORM_ID, FORM_SHARE.SHARED_WITH_EMAIL)
                 .from(FORM_SHARE)
                 .where(FORM_SHARE.FORM_ID.eq(formId))
-                .fetch(Records.mapping(FormShare::new));
-    }
-
-    public List<FormShare> findBySharedWithEmail(String email) {
-        return dsl.select(FORM_SHARE.ID, FORM_SHARE.FORM_ID, FORM_SHARE.SHARED_WITH_EMAIL)
-                .from(FORM_SHARE)
-                .where(FORM_SHARE.SHARED_WITH_EMAIL.eq(email))
                 .fetch(Records.mapping(FormShare::new));
     }
 

@@ -13,7 +13,7 @@
 
     <groupId>ch.martinelli.oss</groupId>
     <artifactId>feedback</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
     <name>feedback</name>
     <description>Feedback Application</description>
 
@@ -35,6 +35,10 @@
             **/*.js
             **/*.ts
         </sonar.exclusions>
+        <sonar.coverage.exclusions>
+            src/main/java/ch/martinelli/feedback/**/*Configuration.java,
+            src/main/java/ch/martinelli/feedback/**/*Exception.java
+        </sonar.coverage.exclusions>
     </properties>
 
     <dependencyManagement>

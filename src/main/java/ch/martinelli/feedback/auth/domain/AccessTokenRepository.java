@@ -43,13 +43,6 @@ public class AccessTokenRepository {
         }
     }
 
-    public Optional<AccessToken> findByToken(String token) {
-        return dsl.select(ACCESS_TOKEN.ID, ACCESS_TOKEN.EMAIL, ACCESS_TOKEN.TOKEN, ACCESS_TOKEN.USED, ACCESS_TOKEN.CREATED_AT, ACCESS_TOKEN.EXPIRES_AT)
-                .from(ACCESS_TOKEN)
-                .where(ACCESS_TOKEN.TOKEN.eq(token))
-                .fetchOptional(Records.mapping(AccessToken::new));
-    }
-
     public Optional<AccessToken> findByEmailAndTokenAndUsedFalse(String email, String token) {
         return dsl.select(ACCESS_TOKEN.ID, ACCESS_TOKEN.EMAIL, ACCESS_TOKEN.TOKEN, ACCESS_TOKEN.USED, ACCESS_TOKEN.CREATED_AT, ACCESS_TOKEN.EXPIRES_AT)
                 .from(ACCESS_TOKEN)

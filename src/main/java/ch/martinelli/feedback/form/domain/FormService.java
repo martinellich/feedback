@@ -107,7 +107,7 @@ public class FormService {
         if (formShareRepository.existsByFormIdAndSharedWithEmail(formId, email)) {
             return;
         }
-        formShareRepository.save(new FormShare(null, formId, email));
+        formShareRepository.insert(new FormShare(null, formId, email));
     }
 
     @Transactional
@@ -124,7 +124,7 @@ public class FormService {
         var response = responseRepository.insert(new FeedbackResponse(null, formId, LocalDateTime.now()));
 
         for (FeedbackAnswer answer : answers) {
-            answerRepository.save(answer.withResponseId(response.id()));
+            answerRepository.insert(answer.withResponseId(response.id()));
         }
 
         return response;
