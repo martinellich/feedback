@@ -176,6 +176,49 @@ class UC01LoginTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-01", scenario = "A2", businessRules = "BR-002")
+    void expired_code_is_rejected() {
+        var email = "uc01-expired@example.com";
+        UI.getCurrent().navigate(LoginView.class);
+
+        _setValue(_get(EmailField.class, spec -> spec.withLabel("Email")), email);
+        _click(_get(Button.class, spec -> spec.withText("Send Login Code")));
+
+        // Backdate the token's expiresAt to the past
+        dsl.update(ACCESS_TOKEN)
+                .set(ACCESS_TOKEN.EXPIRES_AT, java.time.LocalDateTime.now().minusHours(1))
+                .where(ACCESS_TOKEN.EMAIL.eq(email))
+                .execute();
+
+        var code = dsl.select(ACCESS_TOKEN.TOKEN)
+                .from(ACCESS_TOKEN)
+                .where(ACCESS_TOKEN.EMAIL.eq(email))
+                .fetchOne(ACCESS_TOKEN.TOKEN);
+
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Login Code")), code);
+        _click(_get(Button.class, spec -> spec.withText("Login")));
+
+        expectNotifications("Login code sent! Check your inbox.", "Invalid or expired code");
+    }
+
+    @Test
+    @UseCase(id = "UC-01", businessRules = "BR-001")
+    void generated_code_is_8_digit_numeric() {
+        var email = "uc01-format@example.com";
+        UI.getCurrent().navigate(LoginView.class);
+
+        _setValue(_get(EmailField.class, spec -> spec.withLabel("Email")), email);
+        _click(_get(Button.class, spec -> spec.withText("Send Login Code")));
+
+        var code = dsl.select(ACCESS_TOKEN.TOKEN)
+                .from(ACCESS_TOKEN)
+                .where(ACCESS_TOKEN.EMAIL.eq(email))
+                .fetchOne(ACCESS_TOKEN.TOKEN);
+
+        assertThat(code).matches("\\d{8}");
+    }
+
+    @Test
     @UseCase(id = "UC-01", businessRules = "BR-003")
     void used_token_cannot_be_used_again() {
         var email = "uc01-single-use@example.com";

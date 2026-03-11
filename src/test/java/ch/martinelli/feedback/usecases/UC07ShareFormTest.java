@@ -9,7 +9,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
-
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,6 +108,60 @@ class UC07ShareFormTest extends KaribuTest {
         var items = com.github.mvysny.kaributesting.v10.GridKt._findAll(grid);
         assertThat(items).hasSize(1);
         assertThat(items.getFirst().title()).isEqualTo("Share Test");
+    }
+
+    @Test
+    @UseCase(id = "UC-07", scenario = "A1", businessRules = "BR-016")
+    void share_with_invalid_email_shows_error() {
+        UI.getCurrent().navigate(DashboardView.class);
+
+        _click(findActionButton("Share"));
+
+        var emailField = _get(EmailField.class, spec -> spec.withLabel("Share with email"));
+        _setValue(emailField, "not-an-email");
+
+        _click(_get(Button.class, spec -> spec.withText("Share")));
+
+        expectNotifications("Please enter a valid email");
+    }
+
+    @Test
+    @UseCase(id = "UC-07", businessRules = "BR-014")
+    void non_owner_does_not_see_share_button() {
+        var otherEmail = "uc07-other@example.com";
+        formService.shareForm(formId, otherEmail);
+
+        logout();
+        login(otherEmail, List.of("USER"));
+        UI.getCurrent().navigate(DashboardView.class);
+
+        @SuppressWarnings("unchecked")
+        Grid<FeedbackForm> grid = _get(Grid.class);
+        var actions = (HorizontalLayout) com.github.mvysny.kaributesting.v10.GridKt._getCellComponent(grid, 0, "actions");
+        var shareButton = actions.getChildren()
+                .filter(c -> c instanceof Button btn && "Share".equals(btn.getText()))
+                .findFirst()
+                .orElse(null);
+        assertThat(shareButton).isNull();
+    }
+
+    @Test
+    @UseCase(id = "UC-07", businessRules = "BR-015")
+    void shared_user_does_not_see_share_button() {
+        formService.shareForm(formId, SHARED_EMAIL);
+
+        logout();
+        login(SHARED_EMAIL, List.of("USER"));
+        UI.getCurrent().navigate(DashboardView.class);
+
+        @SuppressWarnings("unchecked")
+        Grid<FeedbackForm> grid = _get(Grid.class);
+        var actions = (HorizontalLayout) com.github.mvysny.kaributesting.v10.GridKt._getCellComponent(grid, 0, "actions");
+        var shareButton = actions.getChildren()
+                .filter(c -> c instanceof Button btn && "Share".equals(btn.getText()))
+                .findFirst()
+                .orElse(null);
+        assertThat(shareButton).isNull();
     }
 
     @Test

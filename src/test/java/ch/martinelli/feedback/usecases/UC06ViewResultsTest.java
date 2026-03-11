@@ -53,7 +53,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
-    @UseCase(id = "UC-06", businessRules = "BR-011")
+    @UseCase(id = "UC-06", businessRules = "BR-036")
     void owner_can_view_results() {
         login(OWNER_EMAIL, List.of("USER"));
         UI.getCurrent().navigate(ResultsView.class, formId);
@@ -97,7 +97,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
-    @UseCase(id = "UC-06", businessRules = "BR-013")
+    @UseCase(id = "UC-06", businessRules = "BR-037")
     void results_show_text_answers() {
         var form = formService.getFormById(formId).orElseThrow();
         var answers = new ArrayList<FeedbackAnswer>();
@@ -120,7 +120,7 @@ class UC06ViewResultsTest extends KaribuTest {
     }
 
     @Test
-    @UseCase(id = "UC-06", businessRules = "BR-014")
+    @UseCase(id = "UC-06", businessRules = "BR-038")
     void results_show_rating_distribution_chart() {
         var form = formService.getFormById(formId).orElseThrow();
 
@@ -184,6 +184,62 @@ class UC06ViewResultsTest extends KaribuTest {
         UI.getCurrent().navigate(ResultsView.class, formId);
 
         assertThat(UI.getCurrent().getInternals().getActiveViewLocation().getPath()).isEmpty();
+    }
+
+    @Test
+    @UseCase(id = "UC-06", businessRules = "BR-036")
+    void owner_can_view_results_of_closed_form() {
+        // Submit a response first
+        var form = formService.getFormById(formId).orElseThrow();
+        var answers = new ArrayList<FeedbackAnswer>();
+        for (var question : form.questions()) {
+            Integer ratingValue = null;
+            String textValue = null;
+            if (question.questionType() == QuestionType.RATING) {
+                ratingValue = 4;
+            } else {
+                textValue = "Nice talk";
+            }
+            answers.add(new FeedbackAnswer(null, null, question.id(), ratingValue, textValue));
+        }
+        formService.submitResponse(formId, answers);
+
+        // Close the form
+        formService.closeForm(formId);
+
+        login(OWNER_EMAIL, List.of("USER"));
+        UI.getCurrent().navigate(ResultsView.class, formId);
+
+        assertThat(_get(H2.class, spec -> spec.withText("Results: Results Test")).isVisible()).isTrue();
+        assertThat(_get(Paragraph.class, spec -> spec.withText("Total responses: 1")).isVisible()).isTrue();
+    }
+
+    @Test
+    @UseCase(id = "UC-06", businessRules = "BR-037")
+    void empty_text_answers_are_not_displayed() {
+        // Submit response with empty text
+        var form = formService.getFormById(formId).orElseThrow();
+        var answers = new ArrayList<FeedbackAnswer>();
+        for (var question : form.questions()) {
+            Integer ratingValue = null;
+            String textValue = null;
+            if (question.questionType() == QuestionType.RATING) {
+                ratingValue = 3;
+            } else {
+                textValue = "";
+            }
+            answers.add(new FeedbackAnswer(null, null, question.id(), ratingValue, textValue));
+        }
+        formService.submitResponse(formId, answers);
+
+        login(OWNER_EMAIL, List.of("USER"));
+        UI.getCurrent().navigate(ResultsView.class, formId);
+
+        // Verify no bullet-point paragraphs exist (empty text should be filtered)
+        var bulletParagraphs = _find(Paragraph.class).stream()
+                .filter(p -> p.getText().startsWith("\u2022"))
+                .toList();
+        assertThat(bulletParagraphs).isEmpty();
     }
 
     @Test

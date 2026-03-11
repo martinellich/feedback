@@ -17,7 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.github.mvysny.kaributesting.v10.GridKt._getCellComponent;
-import static com.github.mvysny.kaributesting.v10.LocatorJ.*;
+import static com.github.mvysny.kaributesting.v10.LocatorJ._click;
+import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UC04PublishFormTest extends KaribuTest {
@@ -71,6 +72,31 @@ class UC04PublishFormTest extends KaribuTest {
 
         var updatedForm = formService.getFormById(formId).orElseThrow();
         assertThat(updatedForm.status().name()).isEqualTo("PUBLIC");
+    }
+
+    @Test
+    @UseCase(id = "UC-04", scenario = "Precondition")
+    void non_owner_does_not_see_publish_button() {
+        var sharedEmail = "uc04-shared@example.com";
+        formService.shareForm(formId, sharedEmail);
+
+        logout();
+        login(sharedEmail, List.of("USER"));
+        UI.getCurrent().navigate(DashboardView.class);
+
+        var actions = getActionButtons(0);
+        assertThat(findActionButton(actions, "Publish")).isNull();
+    }
+
+    @Test
+    @UseCase(id = "UC-04", scenario = "Precondition")
+    void public_form_does_not_show_publish_button() {
+        formService.publishForm(formId);
+
+        UI.getCurrent().navigate(DashboardView.class);
+
+        var actions = getActionButtons(0);
+        assertThat(findActionButton(actions, "Publish")).isNull();
     }
 
     @Test

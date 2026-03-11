@@ -23,8 +23,7 @@
    - Total number of responses
    - For each RATING question: question text, rating distribution chart, average rating, and number of ratings
    - For each TEXT question: question text and all non-empty text answers
-3. System downloads the PDF file to the user's device.
-4. System displays a success notification.
+3. System initiates a browser download of the PDF file.
 
 ## Alternative Flows
 

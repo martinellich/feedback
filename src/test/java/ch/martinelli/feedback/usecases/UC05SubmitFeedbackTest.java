@@ -123,6 +123,37 @@ class UC05SubmitFeedbackTest extends KaribuTest {
     }
 
     @Test
+    @UseCase(id = "UC-05", businessRules = "BR-008")
+    void empty_text_answer_is_not_saved() {
+        UI.getCurrent().navigate(PublicFormView.class, publicToken);
+
+        // Fill in ratings but leave text area empty
+        var ratingGroups = _find(RadioButtonGroup.class);
+        for (var group : ratingGroups) {
+            @SuppressWarnings("unchecked")
+            RadioButtonGroup<Integer> rg = (RadioButtonGroup<Integer>) group;
+            _setValue(rg, 3);
+        }
+
+        // Leave text area empty (default)
+        _click(_get(Button.class, spec -> spec.withText("Submit Feedback")));
+
+        // Verify response was saved
+        assertThat(formService.getResponseCount(formId)).isEqualTo(1);
+
+        // Verify text answers for the TEXT question are empty
+        var form = formService.getFormById(formId).orElseThrow();
+        var textQuestion = form.questions().stream()
+                .filter(q -> q.questionType() == QuestionType.TEXT)
+                .findFirst().orElseThrow();
+        var textAnswers = formService.getTextAnswers(textQuestion.id());
+        var nonEmptyAnswers = textAnswers.stream()
+                .filter(a -> a.textValue() != null && !a.textValue().trim().isEmpty())
+                .toList();
+        assertThat(nonEmptyAnswers).isEmpty();
+    }
+
+    @Test
     @UseCase(id = "UC-05", scenario = "A3", businessRules = "BR-011")
     void already_submitted_shows_message_when_cookie_present() {
         // Simulate a previously submitted cookie on the request
