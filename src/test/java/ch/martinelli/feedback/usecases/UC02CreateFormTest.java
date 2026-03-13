@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static com.github.mvysny.kaributesting.v10.GridKt._size;
 import static com.github.mvysny.kaributesting.v10.LocatorJ.*;
@@ -76,6 +77,7 @@ class UC02CreateFormTest extends KaribuTest {
         assertThat(createdForm.status().name()).isEqualTo("DRAFT");
         assertThat(createdForm.speakerName()).isEqualTo("John Doe");
         assertThat(createdForm.questions()).isEmpty();
+        assertThat(UUID.fromString(createdForm.publicToken())).isNotNull();
     }
 
     @Test
@@ -104,6 +106,30 @@ class UC02CreateFormTest extends KaribuTest {
                 .orElseThrow();
 
         assertThat(form.questions()).isEmpty();
+    }
+
+    @Test
+    @UseCase(id = "UC-02")
+    void create_form_with_only_title_leaves_optional_fields_empty() {
+        _click(_get(Button.class, spec -> spec.withText("Create New Form")));
+
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Form Title")), "Title Only Form");
+
+        _click(_get(Button.class, spec -> spec.withText("Create")));
+
+        expectNotifications("Form created successfully");
+
+        var forms = formService.getFormsForUser(OWNER_EMAIL);
+        var createdForm = forms.stream()
+                .filter(f -> "Title Only Form".equals(f.title()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(createdForm.status().name()).isEqualTo("DRAFT");
+        assertThat(createdForm.speakerName()).isNullOrEmpty();
+        assertThat(createdForm.eventDate()).isNull();
+        assertThat(createdForm.location()).isNullOrEmpty();
+        assertThat(UUID.fromString(createdForm.publicToken())).isNotNull();
+        assertThat(createdForm.questions()).isEmpty();
     }
 
     @Test
